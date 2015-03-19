@@ -2,9 +2,9 @@ var Scorm =  require('../controllers/scorm');
     
 var routes = [
     {
-        path: '/hello',
+        path: '/scorm',
         httpMethod: 'GET',
-        middleware: [Scorm.hello]
+        middleware: [Scorm.zipAndDownloadFile]
     }
 ];
 
