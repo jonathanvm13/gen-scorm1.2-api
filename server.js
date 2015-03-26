@@ -1,7 +1,6 @@
 var debug = require('debug')('gen-scorm1.2-api');
 var http  = require('http');
 var app   = require('./app');
-var http  = require("http");
 
 app.set('port', process.env.PORT || 4000);
 
