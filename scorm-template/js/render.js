@@ -5,7 +5,7 @@ $(document).on("ready", render);
 var Question = window.question;
 var Answer = Question.respuesta || {};
 var Errors = Answer.error_genuino;
-
+var Variables = Question.variables || {}
 //Event Emmiter
 function render() {
 	//Default content
@@ -95,6 +95,34 @@ var Render= {
 			}
 			if(flag == false ) cb(flag);
 		});
+	},
+
+	replaceVariables: function( formula ) {
+		var variables= [];
+		var semi = formula.split("#");
+		var aux = [];
+		semi.forEach(function(variable, index) {
+			if(index % 2 == 1) {
+				aux.push(variable);
+			}
+		});
+		variables = aux;
+		console.log(variables);
+
+	},
+
+	operateVariable: function( newVariable ) {
+		var newVal = null;
+		Variables.forEach(function( variable ) {
+			if(variable.id == newVariable && variable.id != undefined ) {
+				if(variable.tipo == "especifica") {
+					newVal = variable.valor[Math.floor(Math.random()*variable.valor.length)]
+				} else if(variable.tipo == "uniforme") {
+					console.log("es uniforme");
+				}
+			}
+		});
+		console.log(newVal);
 	}
 
 

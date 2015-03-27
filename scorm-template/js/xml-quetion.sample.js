@@ -1,6 +1,6 @@
 var question = {
-    "variables": [
-        {
+    "variables": {
+        "variable": {
             "valor": [
                 "1",
                 "2",
@@ -10,9 +10,7 @@ var question = {
             "tipo": "especifica",
             "id": "x"
         }
-    ]
-        
-    ,
+    },
     "pregunta": {
         "formulacion": {
             "expresion": [
