@@ -51,17 +51,20 @@ var Render= {
 	},
 
     //Load and execute random functions for each var
-    loadVariables : function(){
+    loadVariables : function() {
         var JsonVariables = Question.variables;
 
-        if(typeof JsonVariables.length !='undefined'){
+        if (typeof JsonVariables.length != 'undefined') {
             JsonVariables.forEach(function (variable) {
                 Variables[variable.variable.id] = randomUtils.genRandom(variable.variable);
             });
-        }else {
+        } else {
             Variables[JsonVariables.variable.id] = randomUtils.genRandom(JsonVariables.variable);
         }
         console.log(Variables);
+        $.each(Variables, function (key, val) {
+            $("#infoVars").append("<p>" + key + " = " + val + "</p>");
+        });
     },
 
 	//Generate Solution, evalue and print data

@@ -3,7 +3,7 @@ var randomUtils = {
     //call some function for gen random depend of type of the var
     genRandom: function(variable){
         if(variable.tipo=="especifica" || variable.tipo=="categorica"){
-            return this.getRandomInt(0,variable.valor.length);
+            return variable.valor[this.getRandomInt(0,variable.valor.length)];
         }else if(variable.tipo=="uniforme"){
             return this.roundInc(getRandomArbitrary(variable.inicio,variable.fin),variable.inc,variable.inicio,variable.fin);
         }
