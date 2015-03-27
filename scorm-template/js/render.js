@@ -61,7 +61,7 @@ var Render= {
 
         }else {
 
-            //Variables[JsonVariables.variable.id] =
+            Variables[JsonVariables.variable.id] = randomUtils.genRandom(JsonVariables.variable.tipo);
 
         }
     },

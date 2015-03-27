@@ -1,4 +1,14 @@
 var randomUtils = {
+
+    //call some function for gen random depend of type of the var
+    genRandom: function(tipo){
+        if(tipo=="especifica" || tipo=="categorica"){
+
+        }else if(tipo=="uniforme"){
+
+        }
+    },
+
     // Returns a random number between min (inclusive) and max (exclusive)
     getRandomArbitrary:function(min, max)
     {
