@@ -5,11 +5,15 @@ $(document).on("ready", render);
 var Question = window.question;
 var Answer = Question.respuesta || {};
 var Errors = Answer.error_genuino;
+var TreeUtils = window.treeUtils;
+var RandomUtils = window.randomUtils;
+var Variables = {};
 
 //Event Emmiter
 function render() {
 	//Default content
 	Render.getFormulation();
+    Render.loadVariables();
 
 	//Event Click 
 	$("#sendData").on("click", Render.evalueteData);
@@ -26,14 +30,41 @@ function render() {
 var Render= {
 	//get Texts and Formulas  
 	getFormulation: function() {
-		var Expresions = Question.pregunta.formulacion.expresion;
-		Expresions.forEach(function( expresion ){
-				if(expresion.tipo == "texto") {
-					console.log(expresion.texto);
-					$(".statement").text( $(".statement").text()+expresion.texto );
-				}
-		});
+		var Expresions = Question.pregunta.formulacion.expresion,
+            TreeJson = JSON.parse(decodeURIComponent(Question.pregunta.objetos.json)),
+            Tree,
+            mathmlString;
+
+        if (typeof Question.pregunta.formulacion !== 'undefined') {
+
+            Expresions.forEach(function( expresion ){
+                if(expresion.tipo == "texto") {
+                    $(".statement").append( $(".statement").html()+expresion.texto );
+                }else{
+                    var id = expresion.texto.substring(9, expresion.texto.length);
+                    Tree = TreeJson[id];
+                    mathmlString = TreeUtils.makeString(Tree);
+                    $(".statement").append('<div style="border-style: solid; border-width: 1px;  font-family:inherit;font-size:inherit;font-weight:inherit;background:#ccc; border:1px solid #999; border-radius: 5px; padding: 2px 4px;display:inline-block;" class="pre-equation"><math>'+mathmlString+'</math></div>');
+                }
+            });
+        }
 	},
+
+    //Load and execute random functions for each var
+    loadVariables : function(){
+        var JsonVariables = Question.variables;
+
+        if(JsonVariables.length !='undefined'){
+            JsonVariables.forEach(function (expresion) {
+
+            });
+
+        }else {
+
+            //Variables[JsonVariables.variable.id] =
+
+        }
+    },
 
 	//Generate Solution, evalue and print data
 	generateSolution: function( response ) {
@@ -96,7 +127,4 @@ var Render= {
 			if(flag == false ) cb(flag);
 		});
 	}
-
-
-
 }
