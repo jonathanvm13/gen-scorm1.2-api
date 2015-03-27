@@ -33,6 +33,18 @@ var question = {
         "nombre":"otra pregunta",
         "id":"respuesta-0",
         "cifras_decimales":"0.2",
-        "formula":""
+        "formula":"(sin(PI/2)*10)/2",
+        "error_genuino": [
+            {
+                "formula": "sin(PI/2)*10",
+                "retro_alimentacion": "te falto dividir por 2 :/"
+            },
+            {
+                "formula": "sin(PI/2)/2",
+                "retro_alimentacion": "te falto multiplicar por 10 :/"
+            }
+        ]
     }
 }
+
+window.question = window.question || question;
