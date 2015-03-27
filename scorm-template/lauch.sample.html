@@ -14,17 +14,16 @@
     </head>
     <body>
         <!-- Container where should render the question-formulation -->
-        <section id="Question" class="container-fluid">
-           <article class="col-xs-8 col-xs-offset-2">
-               <h1 class="center"> Pregunta  </h1>
-               <p id="statement" class="statement">  </p>
-               <h4> 
-                    <input id="inputData" class="form-control" type="text" autofocus>
-                    <a id="sendData" class="btn btn-primary" data-toggle="modal" data-target="#modal">Enviar</a>
-                </h4>
-           </article>
-        </section>
+        <div id="Question" class="container-fluid">
+            <h1 id="formulation"></h1>
+            
 
+            
+
+            <div id="div-asnwer">
+                <h4>X= <input id="answer" class="form-control" type="number" autofocus> <a id="verificar" class="btn btn-primary" >Enviar</a></h4>
+            </div>
+        </div>
 
         <!-- Modal that evalue the response -->
         <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -36,8 +35,8 @@
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                            <div id="Answer" class="alert  col-xs-12">Respuesta correcta</div>
-                            <div id="feedback" class=" col-xs-12"> muy bien!</div>
+                            <div id="correcto" class="alert alert-success hide col-xs-12">Respuesta correcta</div>
+                            <div id="feedback" class="alert alert-warning hide col-xs-12"></div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -46,13 +45,9 @@
                 </div>
             </div>
         </div>
-
-
-
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.0.min.js"><\/script>')</script>
         <script src="js/vendor/bootstrap.min.js"></script>
-        <script src="js/vendor/math.min.js"></script>
         <script src="js/api.js"></script>
         <script src="js/xml-question.js"></script>
         <script src="js/render.js"></script>
