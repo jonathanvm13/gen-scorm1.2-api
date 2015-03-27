@@ -9,7 +9,7 @@ module.exports = {
     zipAndDownloadFile: [
         function (req, res) {
 
-            fs.writeFile("./scorm-template/js/xml-question.js", req.body.question, function(err) {
+           /* fs.writeFile("./scorm-template/js/xml-question.js", req.body.question, function(err) {
                 if(err) return res.status(500).jsonp({ok: false});
 
                 fs.writeFile("./scorm-template/js/xml-metadatos.js", req.body.metadatos, function(err) {
@@ -19,9 +19,9 @@ module.exports = {
                 });
             });
 
-            helper.createManifest();
+            helper.createManifest();*/
 
-
+            return res.status(200).jsonp({ok: true});
 
             /*helper.zipFile(function(ok){
                 if(!ok) return res.status(500).jsonp({ok: false});
