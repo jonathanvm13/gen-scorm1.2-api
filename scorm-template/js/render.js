@@ -20,7 +20,6 @@ function render() {
 	//Press Enter
 	$('body').on('keydown','#inputData', function(event) {
 	  if (event.keyCode == 13) {
-	  	$("#modal").modal();
 	    Render.evalueteData();
 	  }
 	});
@@ -100,7 +99,10 @@ var Render= {
 		var response = $("#inputData").val();
 		console.log(response);
 		if(response != null && response != undefined && response != "") {
+			$("#modal").modal();
 			Render.generateSolution(response);
+		} else {
+			alert("no puede enviar un campo vacio");
 		}
 	},
 
