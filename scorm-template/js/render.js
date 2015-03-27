@@ -54,16 +54,14 @@ var Render= {
     loadVariables : function(){
         var JsonVariables = Question.variables;
 
-        if(JsonVariables.length !='undefined'){
-            JsonVariables.forEach(function (expresion) {
-
+        if(typeof JsonVariables.length !='undefined'){
+            JsonVariables.forEach(function (variable) {
+                Variables[variable.variable.id] = randomUtils.genRandom(variable.variable);
             });
-
         }else {
-
-            Variables[JsonVariables.variable.id] = randomUtils.genRandom(JsonVariables.variable.tipo);
-
+            Variables[JsonVariables.variable.id] = randomUtils.genRandom(JsonVariables.variable);
         }
+        console.log(Variables);
     },
 
 	//Generate Solution, evalue and print data
