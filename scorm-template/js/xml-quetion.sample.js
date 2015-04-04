@@ -33,7 +33,7 @@ var question = {
         "nombre":"otra pregunta",
         "id":"respuesta-0",
         "cifras_decimales":"0.2",
-        "formula":"(sin(PI/#x#)*10)/2",
+        "formula":"(sin(PI/2)*10)/2",
         "error_genuino": [
             {
                 "formula": "sin(PI/2)*10",
