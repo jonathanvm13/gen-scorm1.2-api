@@ -5,7 +5,7 @@ var randomUtils = {
         if(variable.tipo=="especifica" || variable.tipo=="categorica"){
             return variable.valor[this.getRandomInt(0,variable.valor.length)];
         }else if(variable.tipo=="uniforme"){
-            return this.roundInc(getRandomArbitrary(variable.inicio,variable.fin),variable.inc,variable.inicio,variable.fin);
+            return this.roundInc(this.getRandomArbitrary(variable.inicio,variable.fin),variable.inc,variable.inicio,variable.fin);
         }
     },
 

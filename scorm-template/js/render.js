@@ -14,6 +14,7 @@ function render() {
 	//Default content
 	Render.getFormulation();
     Render.loadVariables();
+    Render.loadInputsResponse();
 
 	//Event Click 
 	$("#sendData").on("click", Render.evalueteData);
@@ -35,6 +36,7 @@ var Render= {
             Tree,
             mathmlString;
 
+
         if (typeof Question.pregunta.formulacion !== 'undefined') {
 
             Expresions.forEach(function( expresion ){
@@ -44,6 +46,8 @@ var Render= {
                     var id = expresion.texto.substring(9, expresion.texto.length);
                     Tree = TreeJson[id];
                     mathmlString = TreeUtils.makeString(Tree);
+                    console.log(mathmlString);
+                    console.log(Tree);
                     $(".statement").append('<div style="border-style: solid; border-width: 1px;  font-family:inherit;font-size:inherit;font-weight:inherit;background:#ccc; border:1px solid #999; border-radius: 5px; padding: 2px 4px;display:inline-block;" class="pre-equation"><math>'+mathmlString+'</math></div>');
                 }
             });
@@ -61,10 +65,23 @@ var Render= {
         } else {
             Variables[JsonVariables.variable.id] = randomUtils.genRandom(JsonVariables.variable);
         }
-        console.log(Variables);
         $.each(Variables, function (key, val) {
             $("#infoVars").append("<p>" + key + " = " + val + "</p>");
         });
+    },
+
+    //load html inputs for type the response and next evaluate this
+    loadInputsResponse: function(){
+        var JsonResponses = Question.respuestas.respuesta;
+        console.log(JsonResponses);
+
+        if (typeof JsonResponses.length != 'undefined') {
+            JsonResponses.forEach(function (res) {
+                $("#inputResponses").append("<p><label>"+res.nombre+" = </label> <input type='text' id='"+res.id+"'></p>");
+            });
+        } else {
+            $("#inputResponses").append("<p><label>"+JsonResponses.nombre+" = </label> <input type='text' id='"+JsonResponses.id+"'></p>");
+        }
     },
 
 	//Generate Solution, evalue and print data
