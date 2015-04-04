@@ -36,7 +36,7 @@ var question = {
         "formula":"(sin(PI/#x#)*10)/2",
         "error_genuino": [
             {
-                "formula": "sin(PI/2)*10",
+                "formula": "sin(PI/#x#)*10",
                 "retro_alimentacion": "te falto dividir por 2 :/"
             },
             {

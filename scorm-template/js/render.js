@@ -113,7 +113,7 @@ var Render= {
 			console.log(error);
 			try{
 				var evalResponse = math.eval(response+"") || response;
-				var evalError = math.eval(error.formula);
+				var evalError = math.eval(Render.replaceVariables(error.formula+""));
 				console.log(evalError, evalResponse);
 				if(evalError == evalResponse && evalError != undefined) {
 					evalError = "Error: " + evalError ;
