@@ -45,8 +45,6 @@ var Render= {
                     var id = expresion.texto.substring(9, expresion.texto.length);
                     Tree = TreeJson[id];
                     mathmlString = TreeUtils.makeString(Tree);
-                    console.log(mathmlString);
-                    console.log(Tree);
                     $(".statement").append('<div style="border-style: solid; border-width: 1px;  font-family:inherit;font-size:inherit;font-weight:inherit;background:#ccc; border:1px solid #999; border-radius: 5px; padding: 2px 4px;display:inline-block;" class="pre-equation"><math>'+mathmlString+'</math></div>');
                 }
             });
@@ -109,14 +107,17 @@ var Render= {
 	},
 
 	evalueteData: function() {
-		var response = $("#inputData").val();
-		console.log(response);
-		if(response != null && response != undefined && response != "") {
-			$("#modal").modal();
-			Render.generateSolution(response);
-		} else {
-			alert("no puede enviar un campo vacio");
-		}
+		$('.response').each(function(){
+			var response = $(this).val();
+			if(response != null && response != undefined && response != "") {
+				$("#modal").modal();
+				Render.generateSolution(response);
+			} else {
+				alert("no puede enviar un campo vacio");
+			}
+		});
+
+		
 	},
 
 	//compare genuine error with the user response
@@ -149,5 +150,6 @@ var Render= {
 function generateInput(name, id) {
 	return "<div class='input-group'>"+ 
 		"<span class='input-group-addon' id='ba'>"+ name +"</span>"+
-		"<input class='form-control' aria-describedby='ba' type='text' id='"+ id +"'></p></div>"
+		"<input class='form-control response' aria-describedby='ba' type='text' id='"+ id +"'>"+
+		"</div>"
 }
