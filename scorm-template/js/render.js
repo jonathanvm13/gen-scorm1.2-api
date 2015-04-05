@@ -41,14 +41,14 @@ var Render= {
 
             Expresions.forEach(function( expresion ){
                 if(expresion.tipo == "texto") {
-                    $(".statement").append( $(".statement").html()+expresion.texto );
+                    $(".statement").append(expresion.texto );
                 }else{
                     var id = expresion.texto.substring(9, expresion.texto.length);
                     Tree = TreeJson[id];
                     mathmlString = TreeUtils.makeString(Tree);
                     console.log(mathmlString);
                     console.log(Tree);
-                    $(".statement").append('<div style="border-style: solid; border-width: 1px;  font-family:inherit;font-size:inherit;font-weight:inherit;background:#ccc; border:1px solid #999; border-radius: 5px; padding: 2px 4px;display:inline-block;" class="pre-equation"><math>'+mathmlString+'</math></div>');
+                    $(".statement").append('<div style="font-family:inherit;font-size:inherit;font-weight:inherit; padding: 2px 4px;display:inline-block;" class="pre-equation"><math>'+mathmlString+'</math></div>');
                 }
             });
         }
