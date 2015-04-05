@@ -52,13 +52,13 @@ var Render= {
 
   //Load and execute random functions for each var
   loadVariables : function() {
-      var JsonVariables = Question.variables;
+      var JsonVariables = Question.variables.variable;
       if (typeof JsonVariables.length != 'undefined') {
           JsonVariables.forEach(function (variable) {
-              Variables[variable.variable.id] = randomUtils.genRandom(variable.variable);
+              Variables[variable.id] = randomUtils.genRandom(variable);
           });
       } else {
-          Variables[JsonVariables.variable.id] = randomUtils.genRandom(JsonVariables.variable);
+          Variables[JsonVariables.id] = randomUtils.genRandom(JsonVariables);
       }
       console.log(Variables);
       $.each(Variables, function (key, val) {
