@@ -1,11 +1,11 @@
 var randomUtils = {
 
     //call some function for gen random depend of type of the var
-    genRandom: function(tipo){
-        if(tipo=="especifica" || tipo=="categorica"){
-
-        }else if(tipo=="uniforme"){
-
+    genRandom: function(variable){
+        if(variable.tipo=="especifica" || variable.tipo=="categorica"){
+            return variable.valor[this.getRandomInt(0,variable.valor.length)];
+        }else if(variable.tipo=="uniforme"){
+            return this.roundInc(this.getRandomArbitrary(variable.inicio,variable.fin),variable.inc,variable.inicio,variable.fin);
         }
     },
 
@@ -16,7 +16,7 @@ var randomUtils = {
     },
 
     //Returns a random number limit betwen max and min and also an increment
-    RoundInc:function(num, inc, min, max) {
+    roundInc:function(num, inc, min, max) {
         var n = Math.abs(inc); // Change to positive
         var decimal = n - Math.floor(n);
         var cant = this.decimalPlaces(decimal);

@@ -5,6 +5,11 @@ var routes = [
         path: '/scorm/',
         httpMethod: 'POST',
         middleware: [Scorm.zipAndDownloadFile]
+    },
+    {
+        path: '/scorm/download',
+        httpMethod: 'GET',
+        middleware: [Scorm.Download]
     }
 ];
 

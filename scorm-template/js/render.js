@@ -2,18 +2,19 @@ $(document).on("ready", render);
 
 //this should get data of the API
 //Static Variables
-var Question = window.question;
-var Answer = Question.respuesta || {};
-var Errors = Answer.error_genuino;
-//var Variables = Question.variables || {}
-var TreeUtils = window.treeUtils;
+var Question    = window.question;
+var Answer 	    = Question.respuesta || {};
+var Errors 	    = Answer.error_genuino;
+var TreeUtils   = window.treeUtils;
 var RandomUtils = window.randomUtils;
-var Variables = [];
+var Variables   = {};
+
 //Event Emmiter
 function render() {
 	//Default content
 	Render.getFormulation();
     Render.loadVariables();
+    Render.loadInputsResponse();
 
 	//Event Click 
 	$("#sendData").on("click", Render.evalueteData);
@@ -34,6 +35,7 @@ var Render= {
             Tree,
             mathmlString;
 
+
         if (typeof Question.pregunta.formulacion !== 'undefined') {
 
             Expresions.forEach(function( expresion ){
@@ -43,6 +45,8 @@ var Render= {
                     var id = expresion.texto.substring(9, expresion.texto.length);
                     Tree = TreeJson[id];
                     mathmlString = TreeUtils.makeString(Tree);
+                    console.log(mathmlString);
+                    console.log(Tree);
                     $(".statement").append('<div style="border-style: solid; border-width: 1px;  font-family:inherit;font-size:inherit;font-weight:inherit;background:#ccc; border:1px solid #999; border-radius: 5px; padding: 2px 4px;display:inline-block;" class="pre-equation"><math>'+mathmlString+'</math></div>');
                 }
             });
@@ -50,27 +54,36 @@ var Render= {
 	},
 
     //Load and execute random functions for each var
-    loadVariables : function(){
+    loadVariables : function() {
         var JsonVariables = Question.variables;
+        if (typeof JsonVariables.length != 'undefined') {
+            JsonVariables.forEach(function (variable) {
+                Variables[variable.variable.id] = randomUtils.genRandom(variable.variable);
+            });
+        } else {
+            Variables[JsonVariables.variable.id] = randomUtils.genRandom(JsonVariables.variable);
+        }
+        $.each(Variables, function (key, val) {
+            $("#infoVars").append("<p>" + key + " = " + val + "</p>");
+        });
+    },
 
-        // if(JsonVariables.length !='undefined'){
-        //     JsonVariables.forEach(function (expresion) {
-
-        //     });
-
-        // }else {
-
-        //     Variables[JsonVariables.variable.id] = randomUtils.genRandom(JsonVariables.variable.tipo);
-
-        // }
+    //load html inputs for type the response and next evaluate this
+    loadInputsResponse: function(){
+        var JsonResponses = Question.respuestas.respuesta;
+        console.log(JsonResponses);
+        if (typeof JsonResponses.length != 'undefined') 
+            JsonResponses.forEach(function (res) {
+                $("#inputResponses").append(generateInput(res.nombre, res.id));
+            });
+        else 
+            $("#inputResponses").append(generateInput(JsonResponses.nombre, JsonResponses.id));
     },
 
 	//Generate Solution, evalue and print data
 	generateSolution: function( response ) {
 		var formula = Answer.formula;
-		console.log("formula sin remplzar", formula);
-		formula = Render.replaceVariables(formula);
-		console.log("formula despues de remplzar", formula);
+		console.log(formula);
 		try{
 			var solution = math.eval(formula+"");
 			var evalResponse = math.eval(response+"") || response;
@@ -130,41 +143,11 @@ var Render= {
 			}
 			if(flag == false ) cb(flag);
 		});
-	},
-
-	replaceVariables: function( formula ) {
-		var variables= [];
-		var semi = formula.split("#");
-		var aux = [];
-		var newFormula = "";
-		semi.forEach(function(variable, index) {
-			if(index % 2 == 1) {
-				aux.push(variable);
-
-				newFormula += Render.operateVariable(variable);//this will change 
-			} else {
-				newFormula += variable;
-			}
-		});
-		variables = aux;
-		console.debug(newFormula);
-		console.log(variables);
-		return newFormula;
-
-	},
-
-	operateVariable: function( newVariable ) {
-		return "2";
-		// var newVal = null;
-		// Variables.forEach(function( variable ) {
-		// 	if(variable.id == newVariable && variable.id != undefined ) {
-		// 		if(variable.tipo == "especifica") {
-		// 			newVal = variable.valor[Math.floor(Math.random()*variable.valor.length)]
-		// 		} else if(variable.tipo == "uniforme") {
-		// 			console.log("es uniforme");
-		// 		}
-		// 	}
-		// });
-		// console.log(newVal);
 	}
+}
+
+function generateInput(name, id) {
+	return "<div class='input-group'>"+ 
+		"<span class='input-group-addon' id='ba'>"+ name +"</span>"+
+		"<input class='form-control' aria-describedby='ba' type='text' id='"+ id +"'></p></div>"
 }
