@@ -12,8 +12,7 @@ module.exports = {
             var json = JSON.parse(parser.toJson(req.body.question));
             var meta = JSON.parse(parser.toJson(req.body.metadatos));
 
-
-            fs.writeFile("./scorm-template/js/xml-question2.js", "var question = "+JSON.stringify(json.xml)+"; window.question = window.question || question;", function(err) {
+                fs.writeFile("./scorm-template/js/xml-question2.js", "var question = "+JSON.stringify(json.xml)+"; window.question = window.question || question;", function(err) {
                 if(err) return res.status(500).jsonp({ok: false});
 
                 fs.writeFile("./scorm-template/js/xml-metadatos2.js", "module.exports = "+JSON.stringify(meta.xml), function(err) {

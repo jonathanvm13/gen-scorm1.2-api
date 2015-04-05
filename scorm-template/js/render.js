@@ -8,12 +8,13 @@ var Errors = Answer.error_genuino;
 var TreeUtils = window.treeUtils;
 var RandomUtils = window.randomUtils;
 var Variables = {};
+var DecodeText = {"&amp;&amp;#35;40;":"(","&amp;&amp;#35;41;":")"};
 
 //Event Emmiter
 function render() {
 	//Default content
-	Render.getFormulation();
     Render.loadVariables();
+    Render.getFormulation();
     Render.loadInputsResponse();
 
 	//Event Click 
@@ -46,8 +47,15 @@ var Render= {
                     var id = expresion.texto.substring(9, expresion.texto.length);
                     Tree = TreeJson[id];
                     mathmlString = TreeUtils.makeString(Tree);
-                    console.log(mathmlString);
-                    console.log(Tree);
+
+
+                    $.each(Variables, function (key, val) {
+                        mathmlString = mathmlString.replace(new RegExp('<mn>'+key+'</mn>', 'g'), '<mn>'+val+'</mn>');
+                    });
+                    $.each(DecodeText, function (key, val) {
+                        mathmlString = mathmlString.replace(new RegExp('<mtext>'+key+'</mtext>', 'g'), '<mtext>'+val+'</mtext>');
+                    });
+
                     $(".statement").append('<div style="font-family:inherit;font-size:inherit;font-weight:inherit; padding: 2px 4px;display:inline-block;" class="pre-equation"><math>'+mathmlString+'</math></div>');
                 }
             });
