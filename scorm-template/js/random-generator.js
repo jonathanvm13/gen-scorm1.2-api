@@ -5,18 +5,20 @@ var randomUtils = {
         if(variable.tipo=="especifica" || variable.tipo=="categorica"){
             return variable.valor[this.getRandomInt(0,variable.valor.length)];
         }else if(variable.tipo=="uniforme"){
-            return this.roundInc(this.getRandomArbitrary(variable.inicio,variable.fin),variable.inc,variable.inicio,variable.fin);
+            var max  = parseFloat(variable.fin - variable.inicio)/parseFloat(variable.cifras_decimales);
+            return this.roundInc(this.getRandomInt(0,max),variable.cifras_decimales,variable.inicio,variable.fin);
         }
     },
 
     // Returns a random number between min (inclusive) and max (exclusive)
     getRandomArbitrary:function(min, max)
     {
-        return Math.random() * (max - min) + min;
+        return Math.random() * max;
     },
 
     //Returns a random number limit betwen max and min and also an increment
     roundInc:function(num, inc, min, max) {
+
         var n = Math.abs(inc); // Change to positive
         var decimal = n - Math.floor(n);
         var cant = this.decimalPlaces(decimal);
@@ -24,18 +26,8 @@ var randomUtils = {
         for (var i = 1; i <= cant; i++) {
             mul *= 10;
         }
-        if (num % inc == 0) {
-            if ((Math.round((num + (min % inc)) * mul) / mul) > max)
-                return Math.round((num - (min % inc)) * mul) / mul
-            else
-                return Math.round((num + (min % inc)) * mul) / mul
-        } else {
-            var falta = num % inc;
-            if ((Math.round((num + inc - falta + (min % inc)) * mul) / mul) > max)
-                return Math.round((num - falta + (min % inc)) * mul) / mul
-            else
-                return Math.round((num + inc - falta + (min % inc)) * mul) / mul
-        }
+        return Math.round(parseFloat(min+inc*num)*mul)/mul;
+
     },
 
     // Returns a random integer between min (inclusive) and max (inclusive). Using Math.round() will give you a non-uniform distribution!
