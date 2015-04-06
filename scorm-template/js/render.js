@@ -135,7 +135,8 @@ var Render= {
 	//compare genuine error with the user response
 	checkErrors: function( response, id, cb ) {
 		var flag = false;
-		var res = $.grep(Responses, function(res){return res.id == id });
+		var res = $.grep(Responses, function(res){return res.id == id })[0];
+		console.log(res);
 		if(res.error_genuino) {
 			res.error_genuino.forEach(function( error ){
 				console.log(error);
@@ -143,10 +144,8 @@ var Render= {
 					var evalError = math.eval(Render.replaceVariables(error.formula+""));
 					console.log(evalError, response);
 					if(evalError == response && evalError != undefined) {
-						evalError = "Error: " + evalError ;
-						$("#Answer").addClass("alert-warning");
-						$("#Answer").text(evalError);
-						$("#feedback").text("ERROR: " + error.retro_alimentacion);
+						evalError = "Error: " + evalError;
+						$("#Answer").append(Printer.alertModal(res.nombre, "alert-warning ", error.retro_alimentacion));
 						cb(!flag);
 						flag = !flag;
 						return false; //stop forEach
@@ -167,10 +166,10 @@ var Render= {
 		var newFormula = formula.split("#").map(function(value, index){
 			if(index % 2 != 0) {
 				return Variables[value]
-			}
+			} else return value;
 		});
-		console.log(newFormula);
-		return newFormula;
+		console.log(newFormula.join().replace(/,/gi, ""));
+		return newFormula.join().replace(/,/gi, "");
 	}
 
 }

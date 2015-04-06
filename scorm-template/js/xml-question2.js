@@ -36,7 +36,17 @@ var question = {
             "nombre": "a",
             "id": "respuesta-2",
             "cifras_decimales": 0.2,
-            "formula": 1
+            "formula": 1,
+            "error_genuino": [
+                {
+                    "formula": "2*#y#",
+                    "retro_alimentacion": "falto dividir por 2"
+                },
+                {
+                    "formula": "1/2",
+                    "retro_alimentacion": "falto multiplicar por 2"
+                }
+            ]
         }, {
             "nombre": "b",
             "id": "respuesta-3",
