@@ -23,6 +23,13 @@ h1{
     display: inline-block;
 }
 
+.mathjax-expresion {
+    padding: 2px 4px;
+    display:inline-block;
+    border: dotted 1px;
+    margin: 0 3px;
+}
+
 
 
 

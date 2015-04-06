@@ -9,7 +9,9 @@ var TreeUtils   = window.treeUtils;
 var RandomUtils = window.randomUtils;
 var Variables   = {};
 var Responses   = Question.respuestas.respuesta;
+var Printer 		= window.Printer;
 
+var correctAnswer = true;
 //Event Emmiter
 function render() {
 	//Default content
@@ -44,7 +46,7 @@ var Render= {
                     var id = expresion.texto.substring(9, expresion.texto.length);
                     Tree = TreeJson[id];
                     mathmlString = TreeUtils.makeString(Tree);
-                    $(".statement").append('<div style="border-style: solid; border-width: 1px;  background:#ccc; border:1px solid #999; border-radius: 5px; padding: 2px 4px;display:inline-block;" class="pre-equation"><math>'+mathmlString+'</math></div>');
+                    $(".statement").append('<div  class="mathjax-expresion pre-equation"><math>'+mathmlString+'</math></div>');
                 }
             });
         }
@@ -72,10 +74,10 @@ var Render= {
       console.log(JsonResponses);
       if (typeof JsonResponses.length != 'undefined') 
           JsonResponses.forEach(function (res) {
-              $("#inputResponses").append(generateInput(res.nombre, res.id));
+              $("#inputResponses").append(Printer.generateInput(res.nombre, res.id));
           });
       else 
-          $("#inputResponses").append(generateInput(JsonResponses.nombre, JsonResponses.id));
+          $("#inputResponses").append(Printer.generateInput(JsonResponses.nombre, JsonResponses.id));
   },
 
   evalueteData: function() {
@@ -92,13 +94,16 @@ var Render= {
 
 	//Generate Solution, evalue and print data
 	generateSolution: function( response, id ) {
-		var formula;
+		var formula, nameResponse;
+		correctAnswer = true;
 		if (typeof Responses.length != 'undefined') {
-			var res = $.grep(Responses, function(res){return res.id = id });
-			console.log(res);
+			var res = $.grep(Responses, function(res){return res.id == id })[0];
+			console.log(res, res.formula);
 			formula = res.formula;
+			nameResponse = res.nombre;
 		} else {
 			formula = Responses.formula;
+			nameResponse = Responses.nombre;
 		}
 		console.log(formula);
 		try{
@@ -106,15 +111,14 @@ var Render= {
 			if(response == solution && response != undefined) {
 				console.log("la respuesta es correcta");
 				solution = "Correcto: " + solution;
-				$("#Answer").addClass("alert-success");
-				$("#Answer").text(solution);
+				$("#Answer").append(Printer.alertModal(nameResponse, 'alert-success',solution));
 			} else {
+				correctAnswer = false;
 				console.log(this);
 				Render.checkErrors( response, id, function( ok ) {
 					if(!ok) {
-						$("#Answer").addClass("alert-warning");
-						$("#Answer").text("Respuesta erronea");	
-						$("#feedback").text("No hay retroalimentacion en este caso");
+						console.log("holi");
+						$("#Answer").append(Printer.alertModal(nameResponse,'alert-warning',"Respuesta erronea"));
 					}
 				});
 			}
@@ -122,6 +126,8 @@ var Render= {
 		}catch(e){
 			console.log(e);
 		}
+		var feedback = correctAnswer? "Muy bien la respuesta es correcta" : "Una de las respuestas es incorrecta";
+		$("#feedback").text(feedback);
 	},
 
 	
@@ -129,7 +135,7 @@ var Render= {
 	//compare genuine error with the user response
 	checkErrors: function( response, id, cb ) {
 		var flag = false;
-		var res = $.grep(Responses, function(res){return res.id = id });
+		var res = $.grep(Responses, function(res){return res.id == id });
 		if(res.error_genuino) {
 			res.error_genuino.forEach(function( error ){
 				console.log(error);
@@ -151,7 +157,7 @@ var Render= {
 				}
 				if(flag == false ) cb(flag);
 			});
-		}
+		} else cb(false);
 		
 	},
 
