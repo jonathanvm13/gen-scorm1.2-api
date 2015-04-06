@@ -7,16 +7,17 @@ var Answer 	    = Question.respuesta || {};
 //var Errors 	    = Answer.error_genuino;
 var TreeUtils   = window.treeUtils;
 var RandomUtils = window.randomUtils;
-var Variables   = {};
 var Responses   = Question.respuestas.respuesta;
 var Printer 		= window.Printer;
+var Variables = {};
+var DecodeText = {"&amp;&amp;#35;40;":"(","&amp;&amp;#35;41;":")"};
 
 var correctAnswer = true;
 //Event Emmiter
 function render() {
 	//Default content
-	Render.getFormulation();
     Render.loadVariables();
+    Render.getFormulation();
     Render.loadInputsResponse();
 
 	//Event Click 
@@ -41,32 +42,40 @@ var Render= {
 
             Expresions.forEach(function( expresion ){
                 if(expresion.tipo == "texto") {
-                    $(".statement").append( $(".statement").html()+expresion.texto );
+                    $(".statement").append(expresion.texto );
                 }else{
                     var id = expresion.texto.substring(9, expresion.texto.length);
                     Tree = TreeJson[id];
                     mathmlString = TreeUtils.makeString(Tree);
-                    $(".statement").append('<div  class="mathjax-expresion pre-equation"><math>'+mathmlString+'</math></div>');
+
+                    $.each(Variables, function (key, val) {
+                        mathmlString = mathmlString.replace(new RegExp('<mn>'+key+'</mn>', 'g'), '<mn>'+val+'</mn>');
+                    });
+                    $.each(DecodeText, function (key, val) {
+                        mathmlString = mathmlString.replace(new RegExp('<mtext>'+key+'</mtext>', 'g'), '<mtext>'+val+'</mtext>');
+                    });
+
+				  					$(".statement").append('<div  class="mathjax-expresion pre-equation"><math>'+mathmlString+'</math></div>');
                 }
             });
         }
 	},
 
   //Load and execute random functions for each var
-  loadVariables : function() {
-      var JsonVariables = Question.variables.variable;
-      if (typeof JsonVariables.length != 'undefined') {
-          JsonVariables.forEach(function (variable) {
-              Variables[variable.id] = randomUtils.genRandom(variable);
-          });
-      } else {
-          Variables[JsonVariables.id] = randomUtils.genRandom(JsonVariables);
-      }
-      console.log(Variables);
-      $.each(Variables, function (key, val) {
-          $("#infoVars").append("<p>" + key + " = " + val + "</p>");
-      });
-  },
+  // loadVariables : function() {
+  //     var JsonVariables = Question.variables.variable;
+  //     if (typeof JsonVariables.length != 'undefined') {
+  //         JsonVariables.forEach(function (variable) {
+  //             Variables[variable.id] = randomUtils.genRandom(variable);
+  //         });
+  //     } else {
+  //         Variables[JsonVariables.id] = randomUtils.genRandom(JsonVariables);
+  //     }
+  //     console.log(Variables);
+  //     $.each(Variables, function (key, val) {
+  //         $("#infoVars").append("<p>" + key + " = " + val + "</p>");
+  //     });
+  // },
 
   //load html inputs for type the response and next evaluate this
   loadInputsResponse: function(){
@@ -91,6 +100,23 @@ var Render= {
 			}
 		});
 	},
+
+  //Load and execute random functions for each var
+  loadVariables : function() {
+      var JsonVariables = Question.variables.variable;
+
+      if (typeof JsonVariables.length != 'undefined') {
+          JsonVariables.forEach(function (variable) {
+              Variables[variable.id] = randomUtils.genRandom(variable);
+          });
+      } else {
+          Variables[JsonVariables.id] = randomUtils.genRandom(JsonVariables);
+      }
+      $.each(Variables, function (key, val) {
+          $("#infoVars").append("<p>" + key + " = " + val + "</p>");
+      });
+  },
+
 
 	//Generate Solution, evalue and print data
 	generateSolution: function( response, id ) {
