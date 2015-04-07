@@ -18,6 +18,7 @@
     "request": "^2.47.0",
     "underscore": "*",
     "uniqid": "^1.0.0",
-    "xml2json": "^0.6.1"
+    "xml2json": "^0.6.1",
+    "cors": "~2.5.3"
   }
 }
