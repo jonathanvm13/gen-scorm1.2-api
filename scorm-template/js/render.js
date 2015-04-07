@@ -13,6 +13,7 @@ var Variables = {};
 var DecodeText = {"&amp;&amp;#35;40;":"(","&amp;&amp;#35;41;":")"};
 
 var correctAnswer = true;
+var correctResponses = 0;
 //Event Emmiter
 function render() {
 	//Default content
@@ -90,6 +91,7 @@ var Render= {
   },
 
   evalueteData: function() {
+
 		$('.response').each(function(){
 			var response = $(this).val();
 			if(response != null && response != undefined && response != "") {
@@ -99,6 +101,7 @@ var Render= {
 				alert("no puede enviar un campo vacio");
 			}
 		});
+		//correctResponses = 0;
 	},
 
   //Load and execute random functions for each var
@@ -122,7 +125,11 @@ var Render= {
 	generateSolution: function( response, id ) {
 		var formula, nameResponse;
 		correctAnswer = true;
+
+		var responsesTotal = 0;
+		
 		if (typeof Responses.length != 'undefined') {
+			responsesTotal = Responses.length;
 			var res = $.grep(Responses, function(res){return res.id == id })[0];
 			console.log(res, res.formula);
 			formula = res.formula;
@@ -130,17 +137,20 @@ var Render= {
 		} else {
 			formula = Responses.formula;
 			nameResponse = Responses.nombre;
+			responsesTotal = 1;
 		}
 		console.log(formula);
 		try{
 			var solution = math.eval(formula+"");
 			if(response == solution && response != undefined) {
 				console.log("la respuesta es correcta");
+				correctResponses++;
 				solution = "Correcto: " + solution;
 				$("#Answer").append(Printer.alertModal(nameResponse, 'alert-success',solution));
 			} else {
 				correctAnswer = false;
 				console.log(this);
+				
 				Render.checkErrors( response, id, function( ok ) {
 					if(!ok) {
 						console.log("holi");
@@ -152,8 +162,13 @@ var Render= {
 		}catch(e){
 			console.log(e);
 		}
-		var feedback = correctAnswer? "Muy bien la respuesta es correcta" : "Una de las respuestas es incorrecta";
-		$("#feedback").text(feedback);
+		//var feedback = correctAnswer? "Muy bien la respuesta es correcta" : "Una de las respuestas es incorrecta";
+		setInterval(function () {
+
+			var feedback = "respondiste "+ correctResponses + " de "+responsesTotal;
+			$("#feedback").text(feedback);
+		}, 1000);
+		
 	},
 
 	
@@ -162,16 +177,34 @@ var Render= {
 	checkErrors: function( response, id, cb ) {
 		var flag = false;
 		var res = $.grep(Responses, function(res){return res.id == id })[0];
-		console.log(res);
-		if(res.error_genuino) {
-			res.error_genuino.forEach(function( error ){
-				console.log(error);
+		if(res && res.error_genuino &&  res.error_genuino != undefined) {
+
+			if(res.error_genuino.length != undefined) {
+				res.error_genuino.forEach(function( error ){
+					console.log(error);
+					try{
+						var evalError = math.eval(Render.replaceVariables(error.formula+""));
+						console.log(evalError, response);
+						if(evalError == response && evalError != undefined) {
+							evalError = "Error: " + evalError;
+							$("#Answer").append(Printer.alertModal(res.nombre, "alert-warning ", error.retro_alimentacion));
+							cb(!flag);
+							flag = !flag;
+							return false; //stop forEach
+						}
+
+					}catch(e) {
+						console.log(e);
+					}
+					
+				});	
+			} else {
 				try{
-					var evalError = math.eval(Render.replaceVariables(error.formula+""));
+					var evalError = math.eval(Render.replaceVariables(res.error_genuino.formula+""));
 					console.log(evalError, response);
 					if(evalError == response && evalError != undefined) {
 						evalError = "Error: " + evalError;
-						$("#Answer").append(Printer.alertModal(res.nombre, "alert-warning ", error.retro_alimentacion));
+						$("#Answer").append(Printer.alertModal(res.nombre, "alert-warning ", res.error_genuino.retro_alimentacion));
 						cb(!flag);
 						flag = !flag;
 						return false; //stop forEach
@@ -180,10 +213,11 @@ var Render= {
 				}catch(e) {
 					console.log(e);
 				}
-				if(flag == false ) cb(flag);
-			});
-		} else cb(false);
-		
+			}
+
+			
+		} 
+		if(flag == false ) cb(flag);
 	},
 
 	//replace vairables from formula
