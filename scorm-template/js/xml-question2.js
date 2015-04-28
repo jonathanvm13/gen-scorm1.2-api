@@ -11,7 +11,7 @@ var question = {
         }, {
             "tipo": "uniforme",
             "id": "x",
-            "cifras_decimales": {},
+            "cifras_decimales": 0.2,
             "inicio": 2,
             "fin": 14
         }]

@@ -141,7 +141,7 @@ var Render= {
 		}
 		console.log(formula);
 		try{
-			var solution = math.eval(formula+"");
+			var solution = math.eval(replaceVariables(formula+""));
 			if(response == solution && response != undefined) {
 				console.log("la respuesta es correcta");
 				correctResponses++;
@@ -228,8 +228,8 @@ var Render= {
 				return Variables[value]
 			} else return value;
 		});
-		console.log(newFormula.join().replace(/,/gi, ""));
 		return newFormula.join().replace(/,/gi, "");
+
 	}
 
 }
