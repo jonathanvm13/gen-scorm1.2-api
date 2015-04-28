@@ -7,6 +7,11 @@ var routes = [
         middleware: [Scorm.zipAndDownloadFile]
     },
     {
+        path: '/scorm/',
+        httpMethod: 'PUT',
+        middleware: [Scorm.update]
+    },
+    {
         path: '/scorm/download',
         httpMethod: 'GET',
         middleware: [Scorm.Download]

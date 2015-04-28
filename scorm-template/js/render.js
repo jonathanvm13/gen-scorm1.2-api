@@ -41,53 +41,58 @@ var Render= {
           mathmlString;
         if (typeof Question.pregunta.formulacion !== 'undefined') {
 
-            Expresions.forEach(function( expresion ){
-                if(expresion.tipo == "texto") {
-                    $(".statement").append(expresion.texto );
-                }else{
-                    var id = expresion.texto.substring(9, expresion.texto.length);
+            if(Expresions.length) {
+                Expresions.forEach(function (expresion) {
+                    if (expresion.tipo == "texto") {
+                        $(".statement").append(expresion.texto);
+                    } else {
+                        var id = expresion.texto.substring(9, expresion.texto.length);
+                        Tree = TreeJson[id];
+                        mathmlString = TreeUtils.makeString(Tree);
+
+                        $.each(Variables, function (key, val) {
+                            mathmlString = mathmlString.replace(new RegExp('<mn>' + key + '</mn>', 'g'), '<mn>' + val + '</mn>');
+                        });
+                        $.each(DecodeText, function (key, val) {
+                            mathmlString = mathmlString.replace(new RegExp('<mtext>' + key + '</mtext>', 'g'), '<mtext>' + val + '</mtext>');
+                        });
+
+                        $(".statement").append('<div  class="mathjax-expresion pre-equation"><math>' + mathmlString + '</math></div>');
+                    }
+                });
+            }else{
+                if (Expresions.tipo == "texto") {
+                    $(".statement").append(Expresions.texto);
+                } else {
+                    var id = Expresions.texto.substring(9, Expresions.texto.length);
                     Tree = TreeJson[id];
                     mathmlString = TreeUtils.makeString(Tree);
 
                     $.each(Variables, function (key, val) {
-                        mathmlString = mathmlString.replace(new RegExp('<mn>'+key+'</mn>', 'g'), '<mn>'+val+'</mn>');
+                        mathmlString = mathmlString.replace(new RegExp('<mn>' + key + '</mn>', 'g'), '<mn>' + val + '</mn>');
                     });
                     $.each(DecodeText, function (key, val) {
-                        mathmlString = mathmlString.replace(new RegExp('<mtext>'+key+'</mtext>', 'g'), '<mtext>'+val+'</mtext>');
+                        mathmlString = mathmlString.replace(new RegExp('<mtext>' + key + '</mtext>', 'g'), '<mtext>' + val + '</mtext>');
                     });
 
-				  					$(".statement").append('<div  class="mathjax-expresion pre-equation"><math>'+mathmlString+'</math></div>');
+                    $(".statement").append('<div  class="mathjax-expresion pre-equation"><math>' + mathmlString + '</math></div>');
                 }
-            });
+            }
         }
 	},
-
-  //Load and execute random functions for each var
-  // loadVariables : function() {
-  //     var JsonVariables = Question.variables.variable;
-  //     if (typeof JsonVariables.length != 'undefined') {
-  //         JsonVariables.forEach(function (variable) {
-  //             Variables[variable.id] = randomUtils.genRandom(variable);
-  //         });
-  //     } else {
-  //         Variables[JsonVariables.id] = randomUtils.genRandom(JsonVariables);
-  //     }
-  //     console.log(Variables);
-  //     $.each(Variables, function (key, val) {
-  //         $("#infoVars").append("<p>" + key + " = " + val + "</p>");
-  //     });
-  // },
 
   //load html inputs for type the response and next evaluate this
   loadInputsResponse: function(){
       var JsonResponses = Question.respuestas.respuesta;
       console.log(JsonResponses);
-      if (typeof JsonResponses.length != 'undefined') 
-          JsonResponses.forEach(function (res) {
-              $("#inputResponses").append(Printer.generateInput(res.nombre, res.id));
-          });
-      else 
-          $("#inputResponses").append(Printer.generateInput(JsonResponses.nombre, JsonResponses.id));
+      if(JsonResponses) {
+          if (typeof JsonResponses.length != 'undefined')
+              JsonResponses.forEach(function (res) {
+                  $("#inputResponses").append(Printer.generateInput(res.nombre, res.id));
+              });
+          else
+              $("#inputResponses").append(Printer.generateInput(JsonResponses.nombre, JsonResponses.id));
+      }
   },
 
   evalueteData: function() {
@@ -108,16 +113,19 @@ var Render= {
   loadVariables : function() {
       var JsonVariables = Question.variables.variable;
 
-      if (typeof JsonVariables.length != 'undefined') {
-          JsonVariables.forEach(function (variable) {
-              Variables[variable.id] = randomUtils.genRandom(variable);
+      if(JsonVariables) {
+
+          if (typeof JsonVariables.length != 'undefined') {
+              JsonVariables.forEach(function (variable) {
+                  Variables[variable.id] = randomUtils.genRandom(variable);
+              });
+          } else {
+              Variables[JsonVariables.id] = randomUtils.genRandom(JsonVariables);
+          }
+          $.each(Variables, function (key, val) {
+              $("#infoVars").append("<p>" + key + " = " + val + "</p>");
           });
-      } else {
-          Variables[JsonVariables.id] = randomUtils.genRandom(JsonVariables);
       }
-      $.each(Variables, function (key, val) {
-          $("#infoVars").append("<p>" + key + " = " + val + "</p>");
-      });
   },
 
 
