@@ -1,13 +1,11 @@
 var mongoose = require('mongoose');
 var UserDB = mongoose.model('user');
 uniqid = require('uniqid');
+
 module.exports = {
 
     create: [
         function(req, res){
-            console.log("Vamos a crear el usuario")
-            console.log(req.body.email);
-
             var user = new UserDB(
                 {   
 
@@ -21,8 +19,6 @@ module.exports = {
                 if(err){
                     res.send(404, err.message);
                 }else{
-                    console.log("Usuario creado")
-
                     res.status(200).jsonp({status: 'completo'});
                 } 
             })
