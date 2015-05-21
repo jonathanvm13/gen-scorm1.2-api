@@ -1,12 +1,24 @@
-var express         = require('express');
-var path            = require('path');
-var logger          = require('morgan');
-var cookieParser    = require('cookie-parser');
-var bodyParser      = require('body-parser');
-var cors            = require('cors');
+var express         = require('express'),
+    path            = require('path'),
+    logger          = require('morgan'),
+    cookieParser    = require('cookie-parser'),
+    bodyParser      = require('body-parser'),
+    cors            = require('cors'),
+    mongoose        = require( 'mongoose' ),
+    multer          = require('multer');
 
 var app = express();
 app.use(cors());
+
+mongoose.connect('mongodb://localhost:27017/ticademia', function(err, res){
+    if(err) console.log("error en la conexion a mongo")
+    else    console.log("conexion a mongo exitosa")
+});
+
+var models = require('./models/question')(app, mongoose);
+    models = require('./models/user')(app, mongoose);
+    models = require('./models/folder')(app, mongoose);
+
 
 app.use(logger('dev'));
 app.use(bodyParser.json());

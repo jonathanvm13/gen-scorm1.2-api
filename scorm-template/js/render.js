@@ -39,12 +39,17 @@ var Render= {
           TreeJson = JSON.parse(decodeURIComponent(Question.pregunta.objetos.json)),
           Tree,
           mathmlString;
+
         if (typeof Question.pregunta.formulacion !== 'undefined') {
 
             if(Expresions.length) {
                 Expresions.forEach(function (expresion) {
                     if (expresion.tipo == "texto") {
                         $(".statement").append(expresion.texto);
+
+                    } else if (expresion.tipo == "imagen"){
+                        $(".statement").append('<img  id="'+ expresion.texto +'" style="height: 100px; width: 100px; display: block" src="images/'+expresion.texto+'" />');
+
                     } else {
                         var id = expresion.texto.substring(9, expresion.texto.length);
                         Tree = TreeJson[id];
@@ -60,9 +65,13 @@ var Render= {
                         $(".statement").append('<div  class="mathjax-expresion pre-equation"><math>' + mathmlString + '</math></div>');
                     }
                 });
-            }else{
+            } else {
                 if (Expresions.tipo == "texto") {
                     $(".statement").append(Expresions.texto);
+
+                } else if (Expresions.tipo == "imagen"){
+                    $(".statement").append('<img  id="'+ Expresions.texto +'" style="height: 150px; width: 150px; display: block" src="images/'+Expresions.texto+'" />');
+
                 } else {
                     var id = Expresions.texto.substring(9, Expresions.texto.length);
                     Tree = TreeJson[id];

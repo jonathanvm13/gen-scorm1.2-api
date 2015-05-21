@@ -19,6 +19,8 @@
     "underscore": "*",
     "uniqid": "^1.0.0",
     "xml2json": "^0.6.1",
-    "cors": "~2.5.3"
+    "cors": "~2.5.3",
+    "mongoose": "^3.8.18",
+    "serve-favicon": "~2.1.3"
   }
 }

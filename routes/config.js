@@ -1,8 +1,9 @@
-var express    = require('express');
-var path       = require('path');
-var _          = require('underscore');
-var fs         = require('fs');
-var bodyParser = require('body-parser');
+var express    = require('express'),
+    path       = require('path'),
+    _          = require('underscore'),
+    fs         = require('fs'),
+    bodyParser = require('body-parser'),
+    multer     = require('multer');
 
 var router  = express.Router();
 
@@ -14,6 +15,20 @@ module.exports = function(app){
         var routes = require(path.join(__dirname, name));
         arangeRoutes(routes, router);
     });
+
+    app.use(multer({
+        dest: './images/',
+        rename: function (fieldname, filename){
+            return filename;
+        },
+        onFileUploadStart: function (file) {
+            console.log(file.originalname + ' is starting ...')
+        },
+        onFileUploadComplete: function (file) {
+            console.log(file.fieldname + ' uploaded to  ' + file.path);
+            done=true;
+        }
+    }));
 
     // REGISTER OUR ROUTES -------------------------------
     // all of our routes will be prefixed with /api
