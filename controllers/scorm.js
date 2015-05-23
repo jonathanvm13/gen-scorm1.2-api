@@ -20,7 +20,6 @@ module.exports = {
                 fs.writeFile("./scorm-template/js/xml-metadatos.js", "module.exports = "+JSON.stringify(meta.xml) , function(err) {
                     if(err) return res.status(500).jsonp({ok: false});
 
-
                     if (xml.formulacion  &&  xml.formulacion.expresion ) {
 
                         if (!xml.formulacion.expresion.length) {

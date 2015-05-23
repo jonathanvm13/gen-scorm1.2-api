@@ -19,7 +19,6 @@ var models = require('./models/question')(app, mongoose);
     models = require('./models/user')(app, mongoose);
     models = require('./models/folder')(app, mongoose);
 
-
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
