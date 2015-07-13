@@ -18,30 +18,10 @@ module.exports = {
       );
       user.save(function (err) {
         if (err) {
-          res.send(404, err.message);
-        } else {
-          res.status(200).jsonp({status: 'completo'});
+          return res.send(404, err.message);
         }
+        res.status(200).jsonp({status: 'completo'});
       })
-    }
-  ],
-
-  update: [
-    function (req, res) {
-      UserDB.findById(req.params.id, function (err, qq) {
-        qq.email = req.body.email;
-        qq.pass = req.body.pass;
-        qq.name = req.body.name;
-
-        qq.save(function (err) {
-          if (err) {
-            res.send(400, err.message);
-          } else {
-            res.status(200).jsonp({status: 'completo'});
-          }
-        })
-      });
-
     }
   ],
 
@@ -54,45 +34,21 @@ module.exports = {
           return res.send(401, "Email or password invalid");
         }
         token = jwt.sign({user: user}, "zVTcnZgLTWoNxAidDbOwQQuWfKRwVC");
-        res.status(200).json({
-          token: token
-        });
+        res.status(200).json({token: token});
       });
-    }
-  ],
-
-  logout: [
-    function (req, res) {
-      UserDB.findById(req.body.id, function (err, user) {
-        if (err) res.send(404, err.message);
-        else if (!user) res.send(401, "No existe el usuario");
-        else {
-          delete user.cookie;
-
-          user.save(function (err) {
-            if (err) {
-              res.send(400, err.message);
-            } else {
-              res.status(200).jsonp({status: 'completo'});
-            }
-          })
-        }
-      });
-
     }
   ],
 
   list: [
     function (req, res) {
-      UserDB.find(function (err, qq) {
-        if (err)
-          res.send(404, err.message);
-
-        res.status(200).jsonp(qq);
+      UserDB.find(function (err, user) {
+        if (err) {
+          return res.send(404, err.message);
+        }
+        res.status(200).jsonp(user);
       });
     }
   ]
-
 
 }
 ;
