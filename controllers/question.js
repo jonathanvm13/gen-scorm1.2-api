@@ -6,7 +6,6 @@ uniqid = require('uniqid');
 module.exports = {
   createQuestion: [
     function (req, res) {
-
       var quest = new QuestionDB(
         {
 

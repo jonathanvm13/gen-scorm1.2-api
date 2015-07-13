@@ -5,12 +5,14 @@ var express = require('express'),
   bodyParser = require('body-parser'),
   cors = require('cors'),
   mongoose = require('mongoose'),
-  multer = require('multer');
+  multer = require('multer'),
+  dataBaseUrl = process.env.MONGO_URI,
+  jwt = require('express-jwt'),
+  app = express();
 
-var app = express();
 app.use(cors());
 
-mongoose.connect('mongodb://localhost:27017/ticademia', function (err, res) {
+mongoose.connect(dataBaseUrl, function (err, res) {
   if (err) console.log("error en la conexion a mongo")
   else    console.log("conexion a mongo exitosa")
 });
@@ -23,6 +25,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
+app.use(jwt({ secret: 'zVTcnZgLTWoNxAidDbOwQQuWfKRwVC'}).unless({path: ['/api/users/login', '/api/users']}));
 
 require('./routes/config.js')(app);
 

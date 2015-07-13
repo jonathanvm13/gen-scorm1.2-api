@@ -1,6 +1,9 @@
-var mongoose = require('mongoose');
-var UserDB = mongoose.model('user');
-uniqid = require('uniqid');
+var mongoose = require('mongoose'),
+  UserDB = mongoose.model('user'),
+  async = require('async'),
+  _ = require("lodash"),
+  jwt = require('jsonwebtoken'),
+  uniqid = require('uniqid');
 
 module.exports = {
 
@@ -8,7 +11,6 @@ module.exports = {
     function (req, res) {
       var user = new UserDB(
         {
-
           email: req.body.email,
           pass: req.body.pass,
           name: req.body.name
@@ -23,7 +25,6 @@ module.exports = {
       })
     }
   ],
-
 
   update: [
     function (req, res) {
@@ -43,29 +44,23 @@ module.exports = {
 
     }
   ],
+
   login: [
     function (req, res) {
       UserDB.where({email: req.body.email, pass: req.body.pass}).findOne(function (err, user) {
-        if (err) res.send(404, err.message);
-        else if (!user) res.send(401, "No existe el usuarioo");
-        else {
-          var header = req.headers['authorization'];
-          console.log(header);
-          UserDB.findOneAndUpdate({_id: user._id}, {cookie: header}, function (err, user) {
-            if (user) {
-              res.status(200).json({
-                id: user._id,
-                name: user.name
-              });
-            }
-            else if (err) res.send(400, err.message);
-            else  res.send(400, "Error inesperado");
-
-          });
+        if (err) {
+          return res.send(404, err.message);
+        } else if (!user) {
+          return res.send(401, "Email or password invalid");
         }
+        token = jwt.sign({user: user}, "zVTcnZgLTWoNxAidDbOwQQuWfKRwVC");
+        res.status(200).json({
+          token: token
+        });
       });
     }
   ],
+
   logout: [
     function (req, res) {
       UserDB.findById(req.body.id, function (err, user) {
@@ -86,6 +81,7 @@ module.exports = {
 
     }
   ],
+
   list: [
     function (req, res) {
       UserDB.find(function (err, qq) {
@@ -98,4 +94,5 @@ module.exports = {
   ]
 
 
-};
+}
+;
