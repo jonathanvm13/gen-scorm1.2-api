@@ -1,5 +1,7 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose'),
+  validator = require('validator'),
+  validate = require('mongoose-validator'),
+  Schema = mongoose.Schema;
 
 var user = Schema(
   {
@@ -17,6 +19,10 @@ user.set('toJSON', {
     delete ret.__v;
   }
 });
+
+user.path('email').validate(function (value, next) {
+  next(validator.isEmail(value));
+}, 'Invalid email');
 
 user.plugin(require('passport-local-mongoose'), {
   usernameField: 'email',
