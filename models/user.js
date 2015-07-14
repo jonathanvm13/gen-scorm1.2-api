@@ -11,6 +11,13 @@ var user = Schema(
   }
 );
 
+user.set('toJSON', {
+  transform: function (doc, ret, options) {
+    delete ret.password;
+    delete ret.__v;
+  }
+});
+
 user.plugin(require('passport-local-mongoose'), {
   usernameField: 'email',
   hashField: 'pass',

@@ -37,12 +37,17 @@ module.exports = {
 
   login: [
     function (req, res) {
-      UserDB.where({email: req.body.email, pass: req.body.pass}).findOne(function (err, user) {
+      var user = req.body.user;
+      UserDB.authenticate()(user.email, user.pass, function (err, user, message) {
         if (err) {
           return res.send(404, err.message);
         } else if (!user) {
           return res.send(401, "Email or password invalid");
         }
+        //Cleaning user object
+        user.pass = undefined;
+        user.folders = undefined;
+
         token = jwt.sign({user: user}, "zVTcnZgLTWoNxAidDbOwQQuWfKRwVC");
         res.status(200).json({token: token});
       });
