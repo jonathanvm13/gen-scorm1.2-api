@@ -27,8 +27,6 @@ var routes = [
   //User
   {path: '/users',                   httpMethod: 'POST',   middleware: [UserCtrl.create]},
   {path: '/users/login',             httpMethod: 'POST',   middleware: [UserCtrl.login]},
-  {path: '/users/logout',            httpMethod: 'POST',   middleware: [UserCtrl.logout]},
-  {path: '/users/:id',               httpMethod: 'PUT',    middleware: [UserCtrl.update]},
   {path: '/users',                   httpMethod: 'GET',    middleware: [UserCtrl.list]}
 
 ];

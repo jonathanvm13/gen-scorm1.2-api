@@ -12,9 +12,9 @@ var express = require('express'),
 
 app.use(cors());
 
-mongoose.connect(dataBaseUrl, function (err, res) {
-  if (err) console.log("error en la conexion a mongo")
-  else    console.log("conexion a mongo exitosa")
+mongoose.connect("mongodb://jonathanvm13:iM}fM7&k^O}%X@ds047692.mongolab.com:47692/nigma", function (err, res) {
+  if (err) console.log("Mongoose database connection error")
+  else    console.log("Mongoose database connection succeeded")
 });
 
 var models = require('./models/question')(app, mongoose);
