@@ -15,10 +15,12 @@ var user = Schema(
 
 user.set('toJSON', {
   transform: function (doc, ret, options) {
-    delete ret.password;
+    delete ret.pass;
+    delete ret.salt;
     delete ret.__v;
   }
 });
+
 
 user.path('email').validate(function (value, next) {
   next(validator.isEmail(value));
@@ -29,5 +31,18 @@ user.plugin(require('passport-local-mongoose'), {
   hashField: 'pass',
   usernameLowerCase: true
 });
+
+user.statics.addFolder = function (userId, folderId, cb) {
+  var conditions = {
+      _id: userId
+    },
+    update = {
+      "$addToSet": {
+        "folders": folderId
+      }
+    };
+
+  this.update(conditions, update, cb);
+};
 
 module.exports = mongoose.model('user', user);

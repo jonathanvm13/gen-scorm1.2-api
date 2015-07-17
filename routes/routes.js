@@ -15,10 +15,10 @@ var routes = [
   {path: '/folders',                 httpMethod: 'POST',   middleware: [FolderCtrl.create]},
   {path: '/folders/:id',             httpMethod: 'PUT',    middleware: [FolderCtrl.update]},
   {path: '/folders/:id',             httpMethod: 'DELETE', middleware: [FolderCtrl.delete]},
-  {path: '/folders/:userid',         httpMethod: 'GET',    middleware: [FolderCtrl.list]},
+  {path: '/folders',                 httpMethod: 'GET',    middleware: [FolderCtrl.list]},
 
   //Question
-  {path: '/questions',               httpMethod: 'POST',   middleware: [QuestionCtrl.createQuestion]},
+  {path: '/folders/:folderid/questions',httpMethod: 'POST',   middleware: [QuestionCtrl.createQuestion]},
   {path: '/questions/:id',           httpMethod: 'PUT',    middleware: [QuestionCtrl.updateQuestion]},
   {path: '/questions/:id',           httpMethod: 'DELETE', middleware: [QuestionCtrl.deleteQuestion]},
   {path: '/questions/all/:folderid', httpMethod: 'GET',    middleware: [QuestionCtrl.listQuestion]},
@@ -27,7 +27,6 @@ var routes = [
   //User
   {path: '/users',                   httpMethod: 'POST',   middleware: [UserCtrl.create]},
   {path: '/users/login',             httpMethod: 'POST',   middleware: [UserCtrl.login]},
-  {path: '/users',                   httpMethod: 'GET',    middleware: [UserCtrl.list]}
 
 ];
 
