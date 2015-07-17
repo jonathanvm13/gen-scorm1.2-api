@@ -13,16 +13,14 @@ var routes = [
 
   // Folder
   {path: '/folders',                 httpMethod: 'POST',   middleware: [FolderCtrl.create]},
-  {path: '/folders/:id',             httpMethod: 'PUT',    middleware: [FolderCtrl.update]},
-  {path: '/folders/:id',             httpMethod: 'DELETE', middleware: [FolderCtrl.delete]},
+  {path: '/folders/:folderid',             httpMethod: 'PUT',    middleware: [FolderCtrl.update]},
+  {path: '/folders/:folderid',             httpMethod: 'DELETE', middleware: [FolderCtrl.delete]},
   {path: '/folders',                 httpMethod: 'GET',    middleware: [FolderCtrl.list]},
 
   //Question
   {path: '/folders/:folderid/questions',httpMethod: 'POST',   middleware: [QuestionCtrl.createQuestion]},
-  {path: '/questions/:id',           httpMethod: 'PUT',    middleware: [QuestionCtrl.updateQuestion]},
-  {path: '/questions/:id',           httpMethod: 'DELETE', middleware: [QuestionCtrl.deleteQuestion]},
-  {path: '/questions/all/:folderid', httpMethod: 'GET',    middleware: [QuestionCtrl.listQuestion]},
-  {path: '/questions/:id',           httpMethod: 'GET',    middleware: [QuestionCtrl.listQuestionOne]},
+  {path: '/questions/:questionid',           httpMethod: 'PUT',    middleware: [QuestionCtrl.updateQuestion]},
+  {path: '/questions/:questionid',           httpMethod: 'DELETE', middleware: [QuestionCtrl.deleteQuestion]},
 
   //User
   {path: '/users',                   httpMethod: 'POST',   middleware: [UserCtrl.create]},

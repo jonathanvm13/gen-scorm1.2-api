@@ -7,7 +7,8 @@ var question = mongoose.Schema(
     data: String,
     metadata: String,
     name: String,
-    folder: {type: String, required: true, ref: 'folder'}
+    folder: {type: String, required: true, ref: 'folder'},
+    delete: Boolean
   }
 );
 
@@ -39,6 +40,32 @@ question.methods.create = function (cb) {
     ],
     cb
   )
+};
+
+question.statics.updateName = function (questionId, name, cb) {
+  var conditions = {
+      _id: questionId
+    },
+    update = {
+      "$set": {
+        "name": name
+      }
+    };
+
+  this.update(conditions, update, cb);
+};
+
+question.statics.deleteById = function (questionId, cb) {
+  var conditions = {
+      _id: questionId
+    },
+    update = {
+      "$set": {
+        "delete": true
+      }
+    };
+
+  this.update(conditions, update, cb);
 };
 
 module.exports = mongoose.model('question', question);

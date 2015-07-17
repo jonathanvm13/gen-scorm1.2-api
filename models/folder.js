@@ -6,7 +6,8 @@ var folder = Schema(
   {
     name: String,
     questions: [{type: Schema.Types.ObjectId, ref: 'question'}],
-    user: {type: String, required: true, ref: 'user'}
+    user: {type: String, required: true, ref: 'user'},
+    delete: Boolean
   }
 );
 
@@ -40,7 +41,7 @@ folder.methods.create = function (cb) {
 };
 
 folder.statics.getFoldersWithQuestions = function (userId, cb) {
-  this.find({user: userId}).populate('questions').exec(cb);
+  this.find({user: userId, $or: [{delete: false}, {delete: {$exists: false}}]}).populate('questions', "name", {$or: [{delete: false}, {delete: {$exists: false}}]}).exec(cb);
 };
 
 folder.statics.addQuestion = function (folderId, questionId, cb) {
@@ -50,6 +51,32 @@ folder.statics.addQuestion = function (folderId, questionId, cb) {
     update = {
       "$addToSet": {
         "questions": questionId
+      }
+    };
+
+  this.update(conditions, update, cb);
+};
+
+folder.statics.updateName = function (folderId, name, cb) {
+  var conditions = {
+      _id: folderId
+    },
+    update = {
+      "$set": {
+        "name": name
+      }
+    };
+
+  this.update(conditions, update, cb);
+};
+
+folder.statics.deleteById = function (folderId, cb) {
+  var conditions = {
+      _id: folderId
+    },
+    update = {
+      "$set": {
+        "delete": true
       }
     };
 

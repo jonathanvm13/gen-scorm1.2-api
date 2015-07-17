@@ -33,32 +33,52 @@ module.exports = {
   },
 
   updateQuestion: function (req, res) {
-    Question.findById(req.params.id, function (err, qq) {
-      if (req.body.titulo) {
-        qq.titulo = req.body.titulo;
-      } else {
-        qq.xml_pregunta = req.body.xml_pregunta;
-        qq.xml_metados = req.body.xml_metados;
+    var question = req.body.question,
+      questionId = req.params.questionid;
+
+    Question.updateName(questionId, question.name, function (err, rows) {
+      if (err) {
+        return res.status(400).json({
+          ok: false,
+          message: err.message
+        });
       }
 
-      qq.save(function (err) {
-        if (err) {
-          res.send(400, err.message);
-        } else {
-          res.status(200).jsonp({status: 'completo'});
-        }
-      })
-    });
+      if (rows.n == 0) {
+        return res.status(400).json({
+          ok: false,
+          message: "The question does not exist"
+        });
+      }
 
+      res.status(200).json({
+        ok: true
+      });
+    });
   },
 
   deleteQuestion: function (req, res) {
-    Question.findById(req.params.id, function (err, qq) {
-      qq.remove(function (err) {
-        if (err) return res.send(500, err.message);
-        res.status(200).jsonp({status: 'completo'})
-      })
+    var questionId = req.params.questionid;
+
+    Question.deleteById(questionId, function (err, rows) {
+      if (err) {
+        return res.status(400).json({
+          ok: false,
+          message: err.message
+        });
+      }
+
+      if (rows.n == 0) {
+        return res.status(400).json({
+          ok: false,
+          message: "The question does not exist"
+        });
+      }
+
+      res.status(200).json({
+        ok: true
+      });
     });
-  },
+  }
 
 };

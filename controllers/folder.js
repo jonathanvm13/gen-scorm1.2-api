@@ -35,48 +35,67 @@ module.exports = {
   },
 
   update: function (req, res) {
-    Folder.findById(req.params.id, function (err, folder) {
-      folder.name = req.body.name;
-      folder.save(function (err) {
-        if (err) {
-          res.send(400, err.message);
-        } else {
-          res.status(200).json({status: 'completo'});
-        }
-      })
+    var folder = req.body.folder,
+      folderId = req.params.folderid;
+
+    Folder.updateName(folderId, folder.name, function (err, rows) {
+      if (err) {
+        return res.status(400).json({
+          ok: false,
+          message: err.message
+        });
+      }
+
+      if (rows.n == 0) {
+        return res.status(400).json({
+          ok: false,
+          message: "The folder does not exist"
+        });
+      }
+
+      res.status(200).json({
+        ok: true
+      });
     });
   },
 
   delete: function (req, res) {
-    Folder.findById(req.params.id, function (err, folder) {
-      if (err) return res.send(500, err.message);
-      else if (!folder) return res.send(500, "No existe");
-      else {
-        folder.remove(function (err) {
-          if (err) return res.send(500, err.message);
-          else {
-            Question.remove({_folder: folder._id}).exec();
-            res.status(200).json({status: 'completo'})
-          }
+    var folderId = req.params.folderid;
 
-        })
+    Folder.deleteById(folderId, function (err, rows) {
+      if (err) {
+        return res.status(400).json({
+          ok: false,
+          message: err.message
+        });
       }
+
+      if (rows.n == 0) {
+        return res.status(400).json({
+          ok: false,
+          message: "The folder does not exist"
+        });
+      }
+
+      res.status(200).json({
+        ok: true
+      });
     });
   },
 
   list: function (req, res) {
     Folder.getFoldersWithQuestions(req.user._id, function (err, folders) {
-        if (err) {
-          return res.status(400).json({
-            ok: false,
-            message: err.message
-          });
-        }
-
-        res.status(200).json({
-          ok: true,
-          folders: folders
+      if (err) {
+        return res.status(400).json({
+          ok: false,
+          message: err.message
         });
+      }
+
+      res.status(200).json({
+        ok: true,
+        folders: folders
       });
+    });
   }
 };
