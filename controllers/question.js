@@ -57,6 +57,31 @@ module.exports = {
     });
   },
 
+  setData: function (req, res) {
+    var question = req.body.question,
+      questionId = req.params.questionid;
+
+    Question.updateData(questionId, question.data, function (err, rows) {
+      if (err) {
+        return res.status(400).json({
+          ok: false,
+          message: err.message
+        });
+      }
+
+      if (rows.n == 0) {
+        return res.status(400).json({
+          ok: false,
+          message: "The question does not exist"
+        });
+      }
+
+      res.status(200).json({
+        ok: true
+      });
+    });
+  },
+
   deleteQuestion: function (req, res) {
     var questionId = req.params.questionid;
 

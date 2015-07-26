@@ -20,6 +20,7 @@ var routes = [
   //Question
   {path: '/folders/:folderid/questions', httpMethod: 'POST',   middleware: [QuestionCtrl.createQuestion]},
   {path: '/questions/:questionid',       httpMethod: 'PUT',    middleware: [QuestionCtrl.updateQuestion]},
+  {path: '/questions/:questionid/data',  httpMethod: 'PUT',    middleware: [QuestionCtrl.setData       ]},
   {path: '/questions/:questionid',       httpMethod: 'DELETE', middleware: [QuestionCtrl.deleteQuestion]},
 
   //User

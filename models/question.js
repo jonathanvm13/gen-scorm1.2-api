@@ -55,6 +55,19 @@ question.statics.updateName = function (questionId, name, cb) {
   this.update(conditions, update, cb);
 };
 
+question.statics.updateData = function (questionId, data, cb) {
+  var conditions = {
+      _id: questionId
+    },
+    update = {
+      "$set": {
+        "data": data
+      }
+    };
+
+  this.update(conditions, update, cb);
+};
+
 question.statics.deleteById = function (questionId, cb) {
   var conditions = {
       _id: questionId
