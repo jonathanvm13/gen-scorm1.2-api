@@ -8,8 +8,21 @@ var mongoose = require('mongoose'),
 module.exports = {
 
   create: function (req, res) {
-    var password = req.body.user.pass,
-      user = new User({email: req.body.user.email, name: req.body.user.name});
+    var password = req.body.user.pass;
+    var colors = ['4EAD3E', '6FC6D9', 'F8CB3A', 'E5204E'];
+    var number = Math.floor(Math.random() * 4);
+    var userName = req.body.user.name;
+    var photo = {
+        public_url: 'http://dummyimage.com/100x100/ffffff/' + colors[number] + '&text=' + userName.charAt(0).toUpperCase()
+    };
+
+    var user = new User(
+      {
+        email: req.body.user.email,
+        name: userName,
+        photo: photo
+      }
+    );
 
     async.waterfall(
       [
@@ -66,7 +79,24 @@ module.exports = {
         token: token
       });
     });
+  },
+
+  getInfo: function(req, res){
+   var user = req.user;
+
+    User.getById(user._id, 'name email photo', function(err, user){
+      if(err){
+        return res.status(400).json({
+          ok: false,
+          message: err.message
+        });
+      }
+
+      res.status(200).json({
+        ok: true,
+        user: user
+      });
+    });
   }
 
-}
-;
+};

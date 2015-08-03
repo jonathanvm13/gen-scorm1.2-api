@@ -25,6 +25,7 @@ var routes = [
 
   //User
   {path: '/users',                       httpMethod: 'POST',   middleware: [UserCtrl.create]},
+  {path: '/users/data',                  httpMethod: 'GET',    middleware: [UserCtrl.getInfo]},
   {path: '/users/login',                 httpMethod: 'POST',   middleware: [UserCtrl.login]},
 
 ];

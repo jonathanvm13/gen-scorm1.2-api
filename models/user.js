@@ -8,8 +8,12 @@ var user = Schema(
     email: {type: String, required: true, unique: true, trim: true},
     pass: String,
     name: String,
-    cookie: String,
-    folders: [{type: Schema.Types.ObjectId, ref: 'folder'}]
+    folders: [{type: Schema.Types.ObjectId, ref: 'folder'}],
+    photo: {
+      public_url: String,
+      format: String,
+      cloud_id: String
+    }
   }
 );
 
@@ -26,23 +30,34 @@ user.path('email').validate(function (value, next) {
   next(validator.isEmail(value));
 }, 'Invalid email');
 
-user.plugin(require('passport-local-mongoose'), {
-  usernameField: 'email',
-  hashField: 'pass',
-  usernameLowerCase: true
-});
 
-user.statics.addFolder = function (userId, folderId, cb) {
-  var conditions = {
+user.statics = {
+
+  addFolder: function (userId, folderId, cb) {
+
+    var conditions = {
       _id: userId
-    },
-    update = {
+    };
+
+    var update = {
       "$addToSet": {
         "folders": folderId
       }
     };
 
-  this.update(conditions, update, cb);
+    this.update(conditions, update, cb);
+  },
+
+  getById: function (userId, fields, cb) {
+    this.findById(userId, fields, cb);
+  }
+
 };
+
+user.plugin(require('passport-local-mongoose'), {
+  usernameField: 'email',
+  hashField: 'pass',
+  usernameLowerCase: true
+});
 
 module.exports = mongoose.model('user', user);
