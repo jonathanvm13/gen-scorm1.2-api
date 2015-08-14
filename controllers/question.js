@@ -10,7 +10,8 @@ module.exports = {
     var question = new Question(
       {
         name: req.body.question.name,
-        folder: req.params.folderid
+        folder: req.params.folderid,
+        owner: req.user._id
       }
     );
 

@@ -8,6 +8,7 @@ var question = mongoose.Schema(
     metadata: String,
     name: String,
     folder: {type: String, required: true, ref: 'folder'},
+    owner: {type: String, required: true, ref: 'user'},
     delete: Boolean
   }
 );

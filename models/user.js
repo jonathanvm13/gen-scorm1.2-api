@@ -9,6 +9,9 @@ var user = Schema(
     pass: String,
     name: String,
     folders: [{type: Schema.Types.ObjectId, ref: 'folder'}],
+    shared_folders: [{type: Schema.Types.ObjectId, ref: 'folder'}],
+    default_folder: {type: Schema.Types.ObjectId, ref: 'folder', required: true},
+    default_shared_folder: {type: Schema.Types.ObjectId, ref: 'folder', required: true},
     photo: {
       public_url: String,
       format: String,
@@ -48,8 +51,30 @@ user.statics = {
     this.update(conditions, update, cb);
   },
 
+  addSharedFolder: function (email, folderId, cb) {
+
+    var conditions = {
+      email: email,
+      folders: {
+        $ne: folderId
+      }
+    };
+
+    var update = {
+      "$addToSet": {
+        "shared_folders": folderId
+      }
+    };
+
+    this.update(conditions, update, cb);
+  },
+
   getById: function (userId, fields, cb) {
     this.findById(userId, fields, cb);
+  },
+
+  getByEmail: function (email, fields, cb) {
+    this.find({email: email}, fields, cb);
   }
 
 };

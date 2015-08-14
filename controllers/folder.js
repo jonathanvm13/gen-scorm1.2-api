@@ -6,17 +6,13 @@ var mongoose = require('mongoose'),
   uniqid = require('uniqid'),
   async = require('async');
 
-module.exports = {
+var handlers = {
 
   create: function (req, res) {
-    var folder = new Folder(
-      {
-        name: req.body.folder.name,
-        user: req.user._id
-      }
-    );
+    var folder = req.body.folder;
+    var user = req.user;
 
-    folder.create(function (err, folder) {
+    this.controller(folder, user, function (err, folder) {
       if (err) {
         return res.status(400).json({
           ok: false,
@@ -84,18 +80,90 @@ module.exports = {
   },
 
   list: function (req, res) {
-    Folder.getFoldersWithQuestions(req.user._id, function (err, folders) {
-      if (err) {
-        return res.status(400).json({
-          ok: false,
-          message: err.message
+    var userId = req.user._id;
+
+    async.waterfall(
+      [
+        function (next) {
+          Folder.getFoldersWithQuestions(userId, function (err, folders) {
+            next(err, folders);
+          });
+        },
+        function (folders, next) {
+           User.getById(userId, 'default_folder default_shared_folder shared_folders', function(err, user){
+             next(err, folders, user);
+           });
+        },
+        function questionsFromDefaultFolder(folders, user, next) {
+           var folderDefaultId = user.default_folder;
+
+           Folder.getFolderWithQuestions(folderDefaultId, function(err, default_folder){
+             next(err, folders, default_folder, user);
+           });
+        },
+        function questionsFromDefaultSharedFolder(folders, default_folder, user, next) {
+          var sharedFolderDefaultId = user.default_shared_folder;
+
+           Folder.getFolderWithQuestions(sharedFolderDefaultId, function(err, default_shared_folder){
+             next(err, folders, default_folder, default_shared_folder, user);
+           });
+        },
+        function questionsFromSharedFolders(folders, default_folder, default_shared_folder, user, next) {
+          var sharedFoldersIds = user.shared_folders;
+
+           Folder.getQuestionsFromFolders(sharedFoldersIds, user._id, function(err, shared_folders){
+             next(err, folders, default_folder, default_shared_folder, shared_folders);
+           });
+        }
+      ],
+      function (err, folders, default_folder, default_shared_folder, shared_folders) {
+        if (err) {
+          return res.status(400).json({
+            ok: false,
+            message: err.message
+          });
+        }
+
+        res.status(200).json({
+          ok: true,
+          folders: folders,
+          default_folder: default_folder,
+          default_shared_folder: default_shared_folder,
+          shared_folders: shared_folders
         });
       }
+    );
+  }
 
-      res.status(200).json({
-        ok: true,
-        folders: folders
-      });
-    });
+};
+
+var controller = {
+
+  create: function (user, folder, cb){
+    var folder = new Folder(
+      {
+        name: folder.name,
+        user: user._id
+      }
+    );
+
+    async.waterfall(
+      [
+        function (next) {
+          folder.create(function (err, folder) {
+            next(err, folder);
+          });
+        },
+        function (folder, next) {
+          User.addFolder(folder.user, folder._id, function (err, rows) {
+            next(err, folder);
+          });
+        }
+      ],
+      cb
+    )
   }
 };
+
+module.exports.controller = controller;
+module.exports.handlers = handlers;

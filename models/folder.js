@@ -18,30 +18,53 @@ folder.set('toJSON', {
 });
 
 folder.methods.create = function (cb) {
-  var User = require('./user'),
-    self = this;
-
-  async.waterfall(
-    [
-      function (next) {
-
-        self.save(function (err, folder) {
-          next(err, folder);
-        });
-      },
-      function (folder, next) {
-
-        User.addFolder(folder.user, folder._id, function (err, rows) {
-          next(err, folder);
-        });
-      }
-    ],
-    cb
-  )
+  this.save(cb);
 };
 
 folder.statics.getFoldersWithQuestions = function (userId, cb) {
-  this.find({user: userId, $or: [{delete: false}, {delete: {$exists: false}}]}).populate('questions', "name", {$or: [{delete: false}, {delete: {$exists: false}}]}).exec(cb);
+  this.find({
+    user: userId,
+    $or: [
+      { delete: false },
+      { delete: { $exists: false } }
+    ]
+  })
+  .populate('questions', "name", {
+    $or: [
+      { delete: false },
+      { delete: { $exists: false } }
+    ]
+  })
+  .exec(cb);
+};
+
+folder.statics.getFolderWithQuestions = function (folderId, cb) {
+  this.findById(folderId).populate('questions', "name", {
+    $or:
+    [
+      { delete: false},
+      { delete: {$exists: false}}
+    ]
+  })
+  .exec(cb);
+};
+
+folder.statics.getQuestionsFromFolders = function (foldersIds, userId, cb) {
+  this.find({
+      _id: {
+        $in: foldersIds
+      },
+      user: {
+          $ne: userId
+      }
+    })
+    .populate('questions', "name", {
+      $or: [
+        { delete: false },
+        { delete: { $exists: false } }
+      ]
+    })
+    .exec(cb);
 };
 
 folder.statics.addQuestion = function (folderId, questionId, cb) {

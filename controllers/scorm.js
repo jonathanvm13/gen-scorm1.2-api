@@ -3,13 +3,12 @@
 var helper = require('../lib/helper.js'),
   path = require('path'),
   mime = require('mime'),
-  fs = require('fs'),
-  parser = require('xml2json');
+  fs = require('fs');
 
 module.exports = {
   zipAndDownloadFile: [
     function (req, res) {
-      var json = JSON.parse(parser.toJson(req.body.question)) || {},
+    /*  var json = JSON.parse(parser.toJson(req.body.question)) || {},
         meta = JSON.parse(parser.toJson(req.body.metadatos)) || {},
         xml = json.xml.pregunta,
         images = [];
@@ -48,10 +47,12 @@ module.exports = {
         });
       });
       //helper.createManifest();
+      */
     }
   ],
   update: [
     function (req, res) {
+      /*
       var json = JSON.parse(parser.toJson(req.body.question));
       var meta = JSON.parse(parser.toJson(req.body.metadatos));
 
@@ -65,7 +66,9 @@ module.exports = {
         });
       });
       //helper.createManifest();
+      */
     }
+
   ],
   Download: [
     function (req, res) {
