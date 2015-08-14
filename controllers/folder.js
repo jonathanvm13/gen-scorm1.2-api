@@ -6,28 +6,49 @@ var mongoose = require('mongoose'),
   uniqid = require('uniqid'),
   async = require('async');
 
-var handlers = {
+module.exports =  {
 
   create: function (req, res) {
     var folder = req.body.folder;
     var user = req.user;
 
-    this.controller(folder, user, function (err, folder) {
-      if (err) {
-        return res.status(400).json({
-          ok: false,
-          message: err.message
+    var folder = new Folder(
+      {
+        name: folder.name,
+        user: user._id
+      }
+    );
+
+    async.waterfall(
+      [
+        function (next) {
+          folder.create(function (err, folder) {
+            next(err, folder);
+          });
+        },
+        function (folder, next) {
+          User.addFolder(folder.user, folder._id, function (err, rows) {
+            next(err, folder);
+          });
+        }
+      ],
+      function (err, folder) {
+        if (err) {
+          return res.status(400).json({
+            ok: false,
+            message: err.message
+          });
+        }
+
+        res.status(200).json({
+          ok: true,
+          folder: {
+            _id: folder._id,
+            name: folder.name
+          }
         });
       }
-
-      res.status(200).json({
-        ok: true,
-        folder: {
-          _id: folder._id,
-          name: folder.name
-        }
-      });
-    });
+    )
   },
 
   update: function (req, res) {
@@ -136,34 +157,3 @@ var handlers = {
   }
 
 };
-
-var controller = {
-
-  create: function (user, folder, cb){
-    var folder = new Folder(
-      {
-        name: folder.name,
-        user: user._id
-      }
-    );
-
-    async.waterfall(
-      [
-        function (next) {
-          folder.create(function (err, folder) {
-            next(err, folder);
-          });
-        },
-        function (folder, next) {
-          User.addFolder(folder.user, folder._id, function (err, rows) {
-            next(err, folder);
-          });
-        }
-      ],
-      cb
-    )
-  }
-};
-
-module.exports.controller = controller;
-module.exports.handlers = handlers;

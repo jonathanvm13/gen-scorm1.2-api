@@ -1,7 +1,7 @@
 var Scorm = require('../controllers/scorm'),
     UserCtrl = require('../controllers/user'),
     QuestionCtrl = require('../controllers/question'),
-    FolderCtrl = require('../controllers/folder').handlers;
+    FolderCtrl = require('../controllers/folder');
 
 var routes = [
 
