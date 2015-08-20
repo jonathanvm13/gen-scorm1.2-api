@@ -68,7 +68,6 @@ module.exports = {
       //helper.createManifest();
       */
     }
-
   ],
   Download: [
     function (req, res) {
