@@ -5,8 +5,11 @@ var mongoose = require('mongoose'),
 var folder = Schema(
   {
     name: String,
+    parent_folder: {type: String, required: true, ref: 'folder'},
     questions: [{type: Schema.Types.ObjectId, ref: 'question'}],
-    user: {type: String, required: true, ref: 'user'},
+    folders: [{type: Schema.Types.ObjectId, ref: 'folder'}],
+    owner: {type: String, required: true, ref: 'user'},
+    users: [{type: String, required: true, ref: 'user'}],
     delete: Boolean
   }
 );
@@ -38,6 +41,10 @@ folder.statics.getFoldersWithQuestions = function (userId, cb) {
   .exec(cb);
 };
 
+folder.statics.getById = function (folderId, cb) {
+  this.findById(folderId, cb);
+};
+
 folder.statics.getFolderWithQuestions = function (folderId, cb) {
   this.findById(folderId).populate('questions', "name", {
     $or:
@@ -65,6 +72,19 @@ folder.statics.getQuestionsFromFolders = function (foldersIds, userId, cb) {
       ]
     })
     .exec(cb);
+};
+
+folder.statics.addFolder = function (parentFolderId, folderIdToAdd, cb) {
+  var conditions = {
+        _id: parentFolderId
+      },
+      update = {
+        "$addToSet": {
+          "folders": folderIdToAdd
+        }
+      };
+
+  this.update(conditions, update, cb);
 };
 
 folder.statics.addQuestion = function (folderId, questionId, cb) {

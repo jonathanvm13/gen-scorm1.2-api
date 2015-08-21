@@ -7,8 +7,9 @@ var question = mongoose.Schema(
     data: String,
     metadata: String,
     name: String,
-    folder: {type: String, required: true, ref: 'folder'},
+    parent_folder: {type: String, required: true, ref: 'folder'},
     owner: {type: String, required: true, ref: 'user'},
+    users: [{type: String, required: true, ref: 'user'}],
     delete: Boolean
   }
 );

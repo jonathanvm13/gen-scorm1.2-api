@@ -8,10 +8,8 @@ var user = Schema(
     email: {type: String, required: true, unique: true, trim: true},
     pass: String,
     name: String,
-    folders: [{type: Schema.Types.ObjectId, ref: 'folder'}],
-    shared_folders: [{type: Schema.Types.ObjectId, ref: 'folder'}],
-    default_folder: {type: Schema.Types.ObjectId, ref: 'folder', required: true},
-    default_shared_folder: {type: Schema.Types.ObjectId, ref: 'folder', required: true},
+    root_folder: {type: Schema.Types.ObjectId, ref: 'folder'},
+    root_shared_folder: {type: Schema.Types.ObjectId, ref: 'folder'},
     photo: {
       public_url: String,
       format: String,
@@ -36,45 +34,12 @@ user.path('email').validate(function (value, next) {
 
 user.statics = {
 
-  addFolder: function (userId, folderId, cb) {
-
-    var conditions = {
-      _id: userId
-    };
-
-    var update = {
-      "$addToSet": {
-        "folders": folderId
-      }
-    };
-
-    this.update(conditions, update, cb);
-  },
-
-  addSharedFolder: function (email, folderId, cb) {
-
-    var conditions = {
-      email: email,
-      folders: {
-        $ne: folderId
-      }
-    };
-
-    var update = {
-      "$addToSet": {
-        "shared_folders": folderId
-      }
-    };
-
-    this.update(conditions, update, cb);
-  },
-
   getById: function (userId, fields, cb) {
     this.findById(userId, fields, cb);
   },
 
   getByEmail: function (email, fields, cb) {
-    this.find({email: email}, fields, cb);
+    this.findOne({email: email}, fields, cb);
   }
 
 };

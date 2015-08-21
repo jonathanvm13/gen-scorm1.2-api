@@ -5,32 +5,46 @@ var mongoose = require('mongoose'),
   uniqid = require('uniqid');
 
 module.exports = {
+
   createQuestion: function (req, res) {
+    var user = req.user;
+    var parentFolderId = req.params.folderid;
 
-    var question = new Question(
-      {
-        name: req.body.question.name,
-        folder: req.params.folderid,
-        owner: req.user._id
-      }
-    );
+    async.waterfall(
+        [
+          function getDataParentFolder(next) {
+            Folder.getById(parentFolderId, next);
+          },
+          function (next, parentFolder) {
+            var question = new Question(
+                {
+                  name: req.body.question.name,
+                  owner: user._id,
+                  parent_folder: parentFolder._id,
+                  users: parentFolder.users //The new folder have the same users  acces from her parent
+                }
+            );
 
-    question.create(function (err, question) {
-      if (err) {
-        return res.status(400).json({
-          ok: false,
-          message: err.message
-        });
-      }
+            question.create(next);
+          }
+        ],
+        function (err) {
+          if (err) {
+            return res.status(400).json({
+              ok: false,
+              message: err.message
+            });
+          }
 
-      res.status(200).json({
-        ok: true,
-        question: {
-          _id: question._id,
-          name: question.name
+          res.status(200).json({
+            ok: true,
+            question: {
+              _id: question._id,
+              name: question.name
+            }
+          });
         }
-      });
-    });
+    );
   },
 
   updateQuestion: function (req, res) {

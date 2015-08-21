@@ -10,45 +10,44 @@ module.exports =  {
 
   create: function (req, res) {
     var folder = req.body.folder;
+    var parentFolderId = req.params.folderid;
     var user = req.user;
 
-    var folder = new Folder(
-      {
-        name: folder.name,
-        user: user._id
-      }
-    );
-
     async.waterfall(
-      [
-        function (next) {
-          folder.create(function (err, folder) {
-            next(err, folder);
-          });
-        },
-        function (folder, next) {
-          User.addFolder(folder.user, folder._id, function (err, rows) {
-            next(err, folder);
-          });
-        }
-      ],
-      function (err, folder) {
-        if (err) {
-          return res.status(400).json({
-            ok: false,
-            message: err.message
-          });
-        }
+        [
+          function getDataParentFolder(next) {
+            Folder.getById(parentFolderId, next);
+          },
+          function (next, parentFolder) {
+            var folder = new Folder(
+                {
+                  name: folder.name,
+                  owner: user._id,
+                  parent_folder: parentFolder._id,
+                  users : parentFolder.users //The new folder have the same users  acces from her parent
+                }
+            );
 
-        res.status(200).json({
-          ok: true,
-          folder: {
-            _id: folder._id,
-            name: folder.name
+            folder.create(next);
           }
-        });
-      }
-    )
+        ],
+        function (err) {
+          if (err) {
+            return res.status(400).json({
+              ok: false,
+              message: err.message
+            });
+          }
+
+          res.status(200).json({
+            ok: true,
+            folder: {
+              _id: folder._id,
+              name: folder.name
+            }
+          });
+        }
+    );
   },
 
   update: function (req, res) {
