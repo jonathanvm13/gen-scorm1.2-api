@@ -44,6 +44,14 @@ question.methods.create = function (cb) {
   )
 };
 
+question.statics.getByIds = function(questionsIds, cb){
+  this.find({
+    _id: {
+      $in: questionsIds
+    }
+  }, cb);
+};
+
 question.statics.updateName = function (questionId, name, cb) {
   var conditions = {
       _id: questionId

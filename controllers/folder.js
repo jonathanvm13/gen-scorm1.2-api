@@ -105,38 +105,18 @@ module.exports =  {
     async.waterfall(
       [
         function (next) {
-          Folder.getFoldersWithQuestions(userId, function (err, folders) {
-            next(err, folders);
+           User.getById(userId, 'root_folder root_shared_folder', next);
+        },
+        function (next, user) {
+          Folder.getAllData(user.root_folder, next);
+        },
+        function (next, rootFolder) {
+          Folder.getAllData(user.root_shared_folder, function(err, sharedFolder){
+            next(rootFolder, sharedFolder);
           });
-        },
-        function (folders, next) {
-           User.getById(userId, 'default_folder default_shared_folder shared_folders', function(err, user){
-             next(err, folders, user);
-           });
-        },
-        function questionsFromDefaultFolder(folders, user, next) {
-           var folderDefaultId = user.default_folder;
-
-           Folder.getFolderWithQuestions(folderDefaultId, function(err, default_folder){
-             next(err, folders, default_folder, user);
-           });
-        },
-        function questionsFromDefaultSharedFolder(folders, default_folder, user, next) {
-          var sharedFolderDefaultId = user.default_shared_folder;
-
-           Folder.getFolderWithQuestions(sharedFolderDefaultId, function(err, default_shared_folder){
-             next(err, folders, default_folder, default_shared_folder, user);
-           });
-        },
-        function questionsFromSharedFolders(folders, default_folder, default_shared_folder, user, next) {
-          var sharedFoldersIds = user.shared_folders;
-
-           Folder.getQuestionsFromFolders(sharedFoldersIds, user._id, function(err, shared_folders){
-             next(err, folders, default_folder, default_shared_folder, shared_folders);
-           });
         }
       ],
-      function (err, folders, default_folder, default_shared_folder, shared_folders) {
+      function (err, rootFolder, sharedFolder) {
         if (err) {
           return res.status(400).json({
             ok: false,
@@ -146,10 +126,8 @@ module.exports =  {
 
         res.status(200).json({
           ok: true,
-          folders: folders,
-          default_folder: default_folder,
-          default_shared_folder: default_shared_folder,
-          shared_folders: shared_folders
+          root_folder: rootFolder,
+          root_shared_folders: sharedFolder
         });
       }
     );
