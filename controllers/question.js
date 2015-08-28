@@ -21,7 +21,7 @@ module.exports = {
                   name: req.body.question.name,
                   owner: user._id,
                   parent_folder: parentFolder._id,
-                  users: parentFolder.users //The new folder have the same users  acces from her parent
+                  users: parentFolder.users //The new question have the same users  acces from her parent
                 }
             );
 

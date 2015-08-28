@@ -52,6 +52,16 @@ question.statics.getByIds = function(questionsIds, cb){
   }, cb);
 };
 
+question.statics.hasUser = function (questionId, userId){
+  this.find({_id: questionId, users: userId}, function(err, question){
+    if(question){
+      return true;
+    }
+
+    return false;
+  })
+};
+
 question.statics.updateName = function (questionId, name, cb) {
   var conditions = {
       _id: questionId
