@@ -48,7 +48,11 @@ question.statics.getByIds = function(questionsIds, cb){
   this.find({
     _id: {
       $in: questionsIds
-    }
+    },
+    $or: [
+      {delete: false},
+      {delete: {$exists: false}}
+    ]
   }, cb);
 };
 

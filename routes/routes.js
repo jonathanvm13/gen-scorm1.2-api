@@ -15,7 +15,6 @@ var routes = [
   {path: '/folders/:folderid/folders',   httpMethod: 'POST',   middleware: [FolderCtrl.create]},
   {path: '/folders/:folderid',           httpMethod: 'PUT',    middleware: [FolderCtrl.update]},
   {path: '/folders/:folderid',           httpMethod: 'DELETE', middleware: [FolderCtrl.delete]},
-  {path: '/folders',                     httpMethod: 'GET',    middleware: [FolderCtrl.list]},
 
   //Question
   {path: '/folders/:folderid/questions', httpMethod: 'POST',   middleware: [QuestionCtrl.createQuestion]},
@@ -29,6 +28,7 @@ var routes = [
   {path: '/users/login',                 httpMethod: 'POST',   middleware: [UserCtrl.login]},
   {path: '/users/questions/:questionid', httpMethod: 'POST',   middleware: [UserCtrl.sharedQuestion]},
   {path: '/users/folders/:folderid',     httpMethod: 'POST',   middleware: [UserCtrl.sharedFolder]},
+  {path: '/users/folders',               httpMethod: 'GET',    middleware: [UserCtrl.getRootsFolders]}
 
 ];
 

@@ -76,18 +76,26 @@ folder.statics.getAllData = function (folderId, cb) {
         });
 
         self.getByIds(foldersIds, function (err, subFolders) {
-          next(err, rootFolder, subFolders, questionsIds);
+          var data = {
+            rootFolder:rootFolder,
+            subFolders:subFolders,
+            questionsIds:questionsIds
+          };
+
+          next(err, data);
         });
       },
-      function (next, rootFolder, subFolders, questionsIds) {
+      function (next, data) {
         var Question = require('./question');
 
-        Question.getByIds(questionsIds, function (err, subQuestions) {
-          next(rootFolder, subFolders, subQuestions)
+        Question.getByIds(data.questionsIds, function (err, subQuestions) {
+          data.subQuestions = subQuestions;
+
+          next(data)
         });
       },
-      function (next, rootFolder, subFolders, subQuestions) {
-        rootFolder = rootFolder.toJSON();
+      function (next, data) {
+        rootFolder = data.rootFolder.toJSON();
 
         rootFolder.folders = _.map(rootFolder.folders, function (folder) {
           var folders = folder.folders;
@@ -96,13 +104,13 @@ folder.statics.getAllData = function (folderId, cb) {
           folder.folders = [];
           folder.questions = [];
 
-          _.forEach(subFolders, function (folder) {
+          _.forEach(data.subFolders, function (folder) {
             if (_.includes(folders, folder._id)) {
               folder.folders.push(folder);
             }
           });
 
-          _.forEach(subQuestions, function (question) {
+          _.forEach(data.subQuestions, function (question) {
             if (_.includes(questions, questions._id)) {
               folder.questions.push(question);
             }

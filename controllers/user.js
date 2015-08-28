@@ -181,6 +181,40 @@ module.exports = {
         res.status(200).json({ok: true});
       }
     );
+  },
+
+  getRootsFolders: function (req, res) {
+    var userId = req.user._id;
+
+    async.waterfall(
+      [
+        function (next) {
+          User.getById(userId, 'root_folder root_shared_folder', next);
+        },
+        function (next, user) {
+          Folder.getAllData(user.root_folder, next);
+        },
+        function (next, rootFolder) {
+          Folder.getAllData(user.root_shared_folder, function(err, sharedFolder){
+            next(rootFolder, sharedFolder);
+          });
+        }
+      ],
+      function (err, rootFolder, sharedFolder) {
+        if (err) {
+          return res.status(400).json({
+            ok: false,
+            message: err.message
+          });
+        }
+
+        res.status(200).json({
+          ok: true,
+          root_folder: rootFolder,
+          root_shared_folders: sharedFolder
+        });
+      }
+    );
   }
 
 };
