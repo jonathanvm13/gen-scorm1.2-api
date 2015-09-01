@@ -6,11 +6,11 @@ var mongoose = require('mongoose'),
 var folder = Schema(
   {
     name: String,
-    parent_folder: {type: String, required: true, ref: 'folder'},
+    parent_folder: {type: String, ref: 'folder'},
     questions: [{type: Schema.Types.ObjectId, ref: 'question'}],
     folders: [{type: Schema.Types.ObjectId, ref: 'folder'}],
     owner: {type: String, required: true, ref: 'user'},
-    users: [{type: String, required: true, ref: 'user'}],
+    users: [{type: String, ref: 'user'}],
     delete: Boolean
   }
 );
@@ -59,23 +59,32 @@ folder.statics.getAllData = function (folderId, cb) {
     [
       function (next) {
         self.findById(folderId)
-          .populate('questions folders', {
+          .populate('questions folders', 'name questions folders', {
             $or: [
               {delete: false},
               {delete: {$exists: false}}
             ]
           }).exec(next);
       },
-      function (next, rootFolder) {
+      function (rootFolder, next) {
+
         var foldersIds = [];
         var questionsIds = [];
 
         _.forEach(rootFolder.folders, function (folder) {
-          foldersIds.concat(folder.folders);
-          questionsIds.concat(folder.questions);
+
+          _.forEach(folder.folders, function (folder) {
+            foldersIds.push(folder);
+          });
+
+          _.forEach(folder.questions, function (question) {
+            questionsIds.push(question);
+          });
+
         });
 
         self.getByIds(foldersIds, function (err, subFolders) {
+
           var data = {
             rootFolder:rootFolder,
             subFolders:subFolders,
@@ -85,16 +94,16 @@ folder.statics.getAllData = function (folderId, cb) {
           next(err, data);
         });
       },
-      function (next, data) {
+      function (data, next) {
         var Question = require('./question');
 
         Question.getByIds(data.questionsIds, function (err, subQuestions) {
           data.subQuestions = subQuestions;
 
-          next(data)
+          next(err, data);
         });
       },
-      function (next, data) {
+      function (data, next) {
         rootFolder = data.rootFolder.toJSON();
 
         rootFolder.folders = _.map(rootFolder.folders, function (folder) {
@@ -104,20 +113,31 @@ folder.statics.getAllData = function (folderId, cb) {
           folder.folders = [];
           folder.questions = [];
 
-          _.forEach(data.subFolders, function (folder) {
-            if (_.includes(folders, folder._id)) {
-              folder.folders.push(folder);
-            }
+          _.forEach(data.subFolders, function (subFolder) {
+
+            _.forEach(folders, function (folderFromArray) {
+
+              if(folderFromArray == subFolder._id.toString()){
+                folder.folders.push(subFolder);
+              }
+            });
+
           });
 
-          _.forEach(data.subQuestions, function (question) {
-            if (_.includes(questions, questions._id)) {
-              folder.questions.push(question);
-            }
+          _.forEach(data.subQuestions, function (subQuestion) {
+
+            _.forEach(questions, function (question) {
+
+              if(question == subQuestion._id.toString()){
+                folder.questions.push(subQuestion);
+              }
+            });
+
           });
 
           return folder;
         });
+
 
         next(null, rootFolder);
       }

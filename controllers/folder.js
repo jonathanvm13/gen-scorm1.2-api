@@ -9,7 +9,7 @@ var mongoose = require('mongoose'),
 module.exports =  {
 
   create: function (req, res) {
-    var folder = req.body.folder;
+    var folderName = req.body.folder.name;
     var parentFolderId = req.params.folderid;
     var user = req.user;
 
@@ -18,20 +18,30 @@ module.exports =  {
           function getDataParentFolder(next) {
             Folder.getById(parentFolderId, next);
           },
-          function (next, parentFolder) {
+          function (parentFolder, next) {
             var folder = new Folder(
                 {
-                  name: folder.name,
+                  name: folderName,
                   owner: user._id,
                   parent_folder: parentFolder._id,
                   users : parentFolder.users //The new folder have the same users  acces from her parent
                 }
             );
 
-            folder.create(next);
+            folder.create(function(err, folder){
+              next(err, folder);
+            });
+          },
+          function(folder, next){
+            Folder.addFolder(parentFolderId, folder._id, function(err, rows){
+              if(!err && rows.n == 0 ){
+                return next(new Error("Parent folder was not update"));
+              }
+              next(err, folder);
+            });
           }
         ],
-        function (err) {
+        function (err, folder) {
           if (err) {
             return res.status(400).json({
               ok: false,

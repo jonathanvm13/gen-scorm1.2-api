@@ -15,7 +15,7 @@ module.exports = {
           function getDataParentFolder(next) {
             Folder.getById(parentFolderId, next);
           },
-          function (next, parentFolder) {
+          function (parentFolder, next) {
             var question = new Question(
                 {
                   name: req.body.question.name,
@@ -25,10 +25,20 @@ module.exports = {
                 }
             );
 
-            question.create(next);
+            question.create(function(err, question){
+              next(err, question);
+            });
+          },
+          function(question, next){
+            Folder.addQuestion(parentFolderId, question._id, function(err, rows){
+              if(!err && rows.n == 0 ){
+                return next(new Error("Parent folder was not update"));
+              }
+              next(err, question);
+            });
           }
         ],
-        function (err) {
+        function (err, question) {
           if (err) {
             return res.status(400).json({
               ok: false,

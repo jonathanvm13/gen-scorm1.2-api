@@ -35,16 +35,19 @@ module.exports = {
     async.waterfall(
       [
         function (next) {
+          console.log("HI");
           rootFolder.create(function (err, folder) {
             next(err);
           });
         },
         function (next) {
+          console.log("Hi2");
           rootSharedFolder.create(function (err, folder) {
             next(err);
           });
         },
         function (next) {
+          console.log("HI3");
           user.setPassword(password, function (err, user) {
             next(err, user);
           });
@@ -191,12 +194,14 @@ module.exports = {
         function (next) {
           User.getById(userId, 'root_folder root_shared_folder', next);
         },
-        function (next, user) {
-          Folder.getAllData(user.root_folder, next);
+        function (user, next) {
+          Folder.getAllData(user.root_folder, function(err, rootFolder){
+            next(err, rootFolder, user);
+          });
         },
-        function (next, rootFolder) {
+        function (rootFolder, user, next) {
           Folder.getAllData(user.root_shared_folder, function(err, sharedFolder){
-            next(rootFolder, sharedFolder);
+            next(err, rootFolder, sharedFolder);
           });
         }
       ],
@@ -207,6 +212,8 @@ module.exports = {
             message: err.message
           });
         }
+
+        console.log("Si todo esta bien", rootFolder, sharedFolder);
 
         res.status(200).json({
           ok: true,
