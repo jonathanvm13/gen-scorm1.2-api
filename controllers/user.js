@@ -35,30 +35,27 @@ module.exports = {
     async.waterfall(
       [
         function (next) {
-          console.log("HI");
           rootFolder.create(function (err, folder) {
             next(err);
           });
         },
         function (next) {
-          console.log("Hi2");
           rootSharedFolder.create(function (err, folder) {
             next(err);
           });
         },
         function (next) {
-          console.log("HI3");
           user.setPassword(password, function (err, user) {
             next(err, user);
           });
         },
         function (user, next) {
-          user.save(function (err) {
-            next(err);
+          user.save(function (err, user) {
+            next(err, user);
           });
         }
       ],
-      function (err) {
+      function (err, user) {
         if (err) {
           return res.status(400).json({
             ok: false,
@@ -66,7 +63,13 @@ module.exports = {
           });
         }
 
-        res.status(200).json({ok: true});
+        //Cleaning user object
+        user.pass = undefined;
+        user.folders = undefined;
+
+        token = jwt.sign(user, "zVTcnZgLTWoNxAidDbOwQQuWfKRwVC");
+
+        res.status(200).json({ok: true, token:token});
       }
     );
   },
@@ -212,8 +215,6 @@ module.exports = {
             message: err.message
           });
         }
-
-        console.log("Si todo esta bien", rootFolder, sharedFolder);
 
         res.status(200).json({
           ok: true,
