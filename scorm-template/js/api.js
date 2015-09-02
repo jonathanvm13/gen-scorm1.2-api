@@ -23,6 +23,7 @@ function findAPI(win)
     }
     return win.API;
 }
+
 function getAPI()
 {
 // start by looking for the API in the current window

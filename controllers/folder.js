@@ -6,7 +6,7 @@ var mongoose = require('mongoose'),
   uniqid = require('uniqid'),
   async = require('async');
 
-module.exports =  {
+module.exports = {
 
   create: function (req, res) {
     var folderName = req.body.folder.name;
@@ -14,49 +14,49 @@ module.exports =  {
     var user = req.user;
 
     async.waterfall(
-        [
-          function getDataParentFolder(next) {
-            Folder.getById(parentFolderId, next);
-          },
-          function (parentFolder, next) {
-            var folder = new Folder(
-                {
-                  name: folderName,
-                  owner: user._id,
-                  parent_folder: parentFolder._id,
-                  users : parentFolder.users //The new folder have the same users  acces from her parent
-                }
-            );
-
-            folder.create(function(err, folder){
-              next(err, folder);
-            });
-          },
-          function(folder, next){
-            Folder.addFolder(parentFolderId, folder._id, function(err, rows){
-              if(!err && rows.n == 0 ){
-                return next(new Error("Parent folder was not update"));
-              }
-              next(err, folder);
-            });
-          }
-        ],
-        function (err, folder) {
-          if (err) {
-            return res.status(400).json({
-              ok: false,
-              message: err.message
-            });
-          }
-
-          res.status(200).json({
-            ok: true,
-            folder: {
-              _id: folder._id,
-              name: folder.name
+      [
+        function getDataParentFolder(next) {
+          Folder.getById(parentFolderId, next);
+        },
+        function (parentFolder, next) {
+          var folder = new Folder(
+            {
+              name: folderName,
+              owner: user._id,
+              parent_folder: parentFolder._id,
+              users: parentFolder.users //The new folder have the same users  acces from her parent
             }
+          );
+
+          folder.create(function (err, folder) {
+            next(err, folder);
+          });
+        },
+        function (folder, next) {
+          Folder.addFolder(parentFolderId, folder._id, function (err, rows) {
+            if (!err && rows.n == 0) {
+              return next(new Error("Parent folder was not update"));
+            }
+            next(err, folder);
           });
         }
+      ],
+      function (err, folder) {
+        if (err) {
+          return res.status(400).json({
+            ok: false,
+            message: err.message
+          });
+        }
+
+        res.status(200).json({
+          ok: true,
+          folder: {
+            _id: folder._id,
+            name: folder.name
+          }
+        });
+      }
     );
   },
 

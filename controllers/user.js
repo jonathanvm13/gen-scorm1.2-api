@@ -69,7 +69,7 @@ module.exports = {
 
         token = jwt.sign(user, "zVTcnZgLTWoNxAidDbOwQQuWfKRwVC");
 
-        res.status(200).json({ok: true, token:token});
+        res.status(200).json({ok: true, token: token});
       }
     );
   },
@@ -198,12 +198,12 @@ module.exports = {
           User.getById(userId, 'root_folder root_shared_folder', next);
         },
         function (user, next) {
-          Folder.getAllData(user.root_folder, function(err, rootFolder){
+          Folder.getAllData(user.root_folder, function (err, rootFolder) {
             next(err, rootFolder, user);
           });
         },
         function (rootFolder, user, next) {
-          Folder.getAllData(user.root_shared_folder, function(err, sharedFolder){
+          Folder.getAllData(user.root_shared_folder, function (err, sharedFolder) {
             next(err, rootFolder, sharedFolder);
           });
         }

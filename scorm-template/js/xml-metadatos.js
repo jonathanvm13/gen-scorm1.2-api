@@ -1,1 +1,0 @@
-module.exports = {"title":"second","language":{},"description":{},"keyword":{},"date":"2015-05-21","autor":"Jonathan","format":"SCORM1.2","resource":"exercise","context":{},"cost":"No","copyright":"CC BY-NC-ND 4.0","classification":"UNESCO"}
