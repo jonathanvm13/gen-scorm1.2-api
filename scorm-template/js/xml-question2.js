@@ -1,58 +1,68 @@
 var question = {
-    "variables": {
-        "variable": [{
-            "tipo": "especifica",
-            "id": "y",
-            "valor": [1, 2, 3, 4, 5]
-        }, {
-            "tipo": "categorica",
-            "id": "t",
-            "valor": ["a", "b", "c", "d", "e"]
-        }, {
-            "tipo": "uniforme",
-            "id": "x",
-            "cifras_decimales": 0.2,
-            "inicio": 2,
-            "fin": 14
-        }]
-    },
-    "pregunta": {
-        "formulacion": {
-            "expresion": [{
-                "tipo": "texto",
-                "texto": "holi soy un textico"
-            }, {
-                "tipo": "expresion",
-                "texto": "equation-0"
-            }]
+  "variables": {
+    "text": "_U = U[0, 10, 1]\n_X = U[10, 20, 2]\n",
+    "variables": [
+      {
+        "codeFragment": "_U = U[0, 10, 1]",
+        "name": "_U",
+        "parameters": {
+          "min": "0",
+          "max": "10",
+          "step": "1"
         },
-        "objetos": {
-            "json": "%5Bnull%5D",
-            "html": "%7B%223%22%3A%22%22%2C%22equation-0%22%3A%22%3Cdiv%20class%3D%5C%22ui-draggable%20card2%20first%5C%22%20data-id%3D%5C%221%5C%22%20data-content%3D%5C%22%2B%5C%22%20data-code%3D%5C%22&amp;&amp;#35;40;&amp;&amp;#35;41;%2B&amp;&amp;#35;40;&amp;&amp;#35;41;%5C%22%20style%3D%5C%22position%3A%20relative%3B%5C%22%3E%3Cp%3E%26nbsp%3B%3C%2Fp%3E%3Cdiv%20class%3D%5C%22spa%20code%20drop2%20ui-droppable%5C%22%20data-id%3D%5C%222%5C%22%20data-pos%3D%5C%220%5C%22%20data-father%3D%5C%221%5C%22%3E%3Cdiv%20class%3D%5C%22ui-draggable%20card2%5C%22%20style%3D%5C%22display%3A%20block%3B%20position%3A%20relative%3B%5C%22%20data-id%3D%5C%225%5C%22%20data-content%3D%5C%221%5C%22%3E%3Cspan%20class%3D%5C%22var%5C%22%3E1%3C%2Fspan%3E%3C%2Fdiv%3E%3C%2Fdiv%3E%2B%3Cdiv%20class%3D%5C%22spa%20code%20drop2%20ui-droppable%5C%22%20data-id%3D%5C%223%5C%22%20data-pos%3D%5C%222%5C%22%20data-father%3D%5C%221%5C%22%3E%3Cdiv%20class%3D%5C%22view-variable%20ui-draggable%20card2%5C%22%20data-id%3D%5C%226%5C%22%20data-content%3D%5C%22y%5C%22%20data-type%3D%5C%22especifica%5C%22%20data-metadatos%3D%5C%22%5B%201%20%2C%202%20%2C%203%20%2C%204%20%2C%205%20%5D%5C%22%20style%3D%5C%22position%3A%20relative%3B%5C%22%3E%20%3Cspan%20class%3D%5C%22var%5C%22%3Ey%3C%2Fspan%3E%3C%2Fdiv%3E%3C%2Fdiv%3E%26nbsp%3B%3Cp%3E%3C%2Fp%3E%3C%2Fdiv%3E%22%7D"
+        "code": "Variables['_U'] = 0 + Math.floor(((10 - 0) * Math.random()/1)) * 1;",
+        "possibleValue": null
+      },
+      {
+        "codeFragment": "_X = U[10, 20, 2]",
+        "name": "_X",
+        "parameters": {
+          "min": "10",
+          "max": "20",
+          "step": "2"
+        },
+        "code": "Variables['_X'] = 10 + Math.floor(((20 - 10) * Math.random()/2)) * 2;",
+        "possibleValue": null
+      }
+    ]
+  },
+  "formulation": "<p>Si tengo manzanas y peras <strong>entonces que tengo</strong></p>",
+  "answers": [
+    {
+      _id: 1,
+      name: "Área",
+      correctValue: "_a * _b",
+      showLabel: true,
+      precision: 2,
+      commonErrors: [
+        {
+          value: "_b - _a",
+          message: "Para calcular el tiempo entre dos primero es el tiempo de fin - tiempo inicio"
+        },
+        {
+          value: "_a * _a",
+          message: "Recordar tal formula"
         }
+      ]
     },
-    "respuestas": {
-        "respuesta": [{
-            "nombre": "a",
-            "id": "respuesta-2",
-            "cifras_decimales": 0.2,
-            "formula": 1,
-            "error_genuino": [
-                {
-                    "formula": "2*#y#",
-                    "retro_alimentacion": "falto dividir por 2"
-                },
-                {
-                    "formula": "1/2",
-                    "retro_alimentacion": "falto multiplicar por 2"
-                }
-            ]
-        }, {
-            "nombre": "b",
-            "id": "respuesta-3",
-            "cifras_decimales": 0.2,
-            "formula": 2
-        }]
+    {
+      _id: 2,
+      name: "Perimetro",
+      correctValue: "_a * 2 + 2 * _b",
+      precision: 3,
+      showLabel: false,
+      commonErrors: [
+        {
+          value: "_b - _a",
+          message: "Para calcular el tiempo entre dos primero es el tiempo de fin - tiempo inicio"
+        },
+        {
+          value: "_b / _a",
+          message: "Recordar tal formula"
+        }
+      ]
     }
+  ]
+
 };
 window.question = window.question || question;
