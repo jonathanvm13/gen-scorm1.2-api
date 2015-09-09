@@ -47,9 +47,10 @@ var Render = {
 
   //load html inputs for type the response and next evaluate this
   loadInputsResponse: function () {
-    // Aquí se puede usar Printer.generateInput para imprimir cada input con su respetivo label. La idea es
-    // buscar en el Objeto Question en la parte de las respuestas los labels de cada una, cargarlos con un input al lado
-    // para que un usuario pueda escribir la respuesta
+    Question.answers.forEach(function(answer, index){
+      var answerHtml = Printer.generateInput(answer.name, answer._id);
+      $('#inputResponses').append(answerHtml);
+    })
   },
 
   evalueteData: function () {
