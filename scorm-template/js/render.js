@@ -8,9 +8,9 @@ var Answer = Question.respuesta || {};
 
 //var Errors 	    = Answer.error_genuino;
 var RandomUtils = window.randomUtils;
-var Responses = Question.respuestas.respuesta;
-var Printer = window.Printer;
 var Variables = {};
+//var Responses = Question.respuestas.respuesta;
+var Printer = window.Printer;
 var DecodeText = {"&amp;&amp;#35;40;": "(", "&amp;&amp;#35;41;": ")"};
 
 var correctAnswer = true;
@@ -68,21 +68,10 @@ var Render = {
 
   //Load and execute random functions for each var
   loadVariables: function () {
-    var JsonVariables = Question.variables.variable;
+    Question.variables.variables.forEach(function(variable, index){
+      eval(variable.code);
+    });
 
-    if (JsonVariables) {
-
-      if (typeof JsonVariables.length != 'undefined') {
-        JsonVariables.forEach(function (variable) {
-          Variables[variable.id] = randomUtils.genRandom(variable);
-        });
-      } else {
-        Variables[JsonVariables.id] = randomUtils.genRandom(JsonVariables);
-      }
-      $.each(Variables, function (key, val) {
-        $("#infoVars").append("<p>" + key + " = " + val + "</p>");
-      });
-    }
   },
 
   //Generate Solution, evalue and print data
