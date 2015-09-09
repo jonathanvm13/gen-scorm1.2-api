@@ -32,7 +32,7 @@ module.exports = {
 
     var question = req.body.question;
 
-    fs.writeFile("./scorm-template/js/xml-question.js", "var question = " + JSON.stringify(question) + "; window.question = window.question || question;", function (err) {
+    fs.writeFile("./scorm-template/js/xml-question.js", "var question = " + JSON.stringify(question) + "; question = JSON.parse(question);window.question = window.question || question;", function (err) {
       if (err) {
         return res.status(400).jsonp({ok: false});
       }

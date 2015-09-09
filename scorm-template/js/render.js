@@ -92,6 +92,8 @@ var Render = {
       if (inputValue != null && inputValue != undefined && inputValue != "") {
 
         var id =  $(this).attr('id');
+        var response = "";
+        var answerError = true;
         Question.answers.forEach(function(answer, index){
           if(answer._id == id ){
 
@@ -100,6 +102,11 @@ var Render = {
             eval(code);
           }
         });
+        if(answerError) {
+          alert(response);
+        } else {
+          alert(response)
+        }
       } else {
         alert("No se puede enviar un campo vacio");
       }
@@ -108,6 +115,7 @@ var Render = {
 
   //Load and execute random functions for each var
   loadVariables: function () {
+    console.log(Question);
     Question.variables.variables.forEach(function(variable, index){
       eval(variable.code);
     });
