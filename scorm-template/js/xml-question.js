@@ -17,7 +17,7 @@ var question = {
       ],
       "_id": 1,
       "code": [
-        "var correctValue = Variable[\"_a\"] * Variable[\"_b\"];",
+        "var correctValue = Variable['_a'] * Variable['_b'];",
         "switch(inputValue){",
         "case correctValue:",
         "console.log(\"You did it!\");",
