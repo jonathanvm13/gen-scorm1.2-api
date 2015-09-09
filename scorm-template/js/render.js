@@ -35,6 +35,7 @@ function render() {
 
 //Object Render
 var Render = {
+
   //get Texts and Formulas
   getFormulation: function () {
     var question = Question.formulation;
@@ -76,9 +77,10 @@ var Render = {
 
   //load html inputs for type the response and next evaluate this
   loadInputsResponse: function () {
-    // Aquí se puede usar Printer.generateInput para imprimir cada input con su respetivo label. La idea es
-    // buscar en el Objeto Question en la parte de las respuestas los labels de cada una, cargarlos con un input al lado
-    // para que un usuario pueda escribir la respuesta
+    Question.answers.forEach(function(answer, index){
+      var answerHtml = Printer.generateInput(answer.name, answer._id);
+      $('#inputResponses').append(answerHtml);
+    })
   },
 
   evalueteData: function () {
@@ -97,21 +99,10 @@ var Render = {
 
   //Load and execute random functions for each var
   loadVariables: function () {
-    var JsonVariables = Question.variables.variable;
+    Question.variables.variables.forEach(function(variable, index){
+      eval(variable.code);
+    });
 
-    if (JsonVariables) {
-
-      if (typeof JsonVariables.length != 'undefined') {
-        JsonVariables.forEach(function (variable) {
-          Variables[variable.id] = randomUtils.genRandom(variable);
-        });
-      } else {
-        Variables[JsonVariables.id] = randomUtils.genRandom(JsonVariables);
-      }
-      $.each(Variables, function (key, val) {
-        $("#infoVars").append("<p>" + key + " = " + val + "</p>");
-      });
-    }
   },
 
   //Generate Solution, evalue and print data
