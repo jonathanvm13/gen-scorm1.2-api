@@ -97,7 +97,7 @@ var question = {
       }
     ]
   },
-  "formulation" : "lalalalalalallalalalal<b>lalalal</b>"
+  "formulation" : "<p><span class='math-tex'>\(x = {-b \pm \sqrt{b^2-4ac} \over 2*_a}\)</span>escribe algo...</p>>"
 }
 
 window.question = window.question || question;
