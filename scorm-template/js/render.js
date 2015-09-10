@@ -8,9 +8,10 @@ var Answer = Question.respuesta || {};
 
 //var Errors 	    = Answer.error_genuino;
 var RandomUtils = window.randomUtils;
-var Responses = Question.respuestas.respuesta;
+//var Responses = Question.respuestas.respuesta;
 var Printer = window.Printer;
 var Variables = {};
+var Variable = {};
 var DecodeText = {"&amp;&amp;#35;40;": "(", "&amp;&amp;#35;41;": ")"};
 
 var correctAnswer = true;
@@ -38,184 +39,90 @@ var Render = {
 
   //get Texts and Formulas
   getFormulation: function () {
+    var question = Question.formulation;
      ///La idea de esta fucnión es cargar toda la formulación tal y como el profesor la programó haciedo uso del objeto
      // Question que tiene toda la data en formato JSON de la pregunta (Formulación, variables y respuestas), aquí se deben cargar las formulas,
      // expresiones, texto, etc con el valor de las variables correspondiente despues de generar los numeros aleatorios y además ejecutar las operaciones
      // entre ellas(En el caso que se deba ejecutar la operacion).
      // El lugar donde se imprimirá toda la formulación tiene la clase .statement y lo pueden encontrar en launch.html
+     var expresionsInQuestion = [];   // @(_q + _b)
+     for (var i = 0; i < question.length; i++) {
+      const token = question[i];
+      if(token == '_'){
+        Variables[String(question).substring(i,i+1)];
+      }
+      if(token == '@'){
+        var initialIndex = {'index':i};
+      } else if(token == '}' && initialIndex){
+        console.log(i);
+        var finalIndex = {'index':i};
+        expresionsInQuestion.push({
+          'expresion':String(question).substring(initialIndex.index+2,finalIndex.index),
+          'completeExpresion': String(question).substring(initialIndex.index,finalIndex.index+1),
+          'initial':initialIndex.index,
+          'final':finalIndex.index
+        });
+      }
+    }
+    var newQuestion = question;
+    expresionsInQuestion.map(function(expresion,index){
+      var newValor = math.eval(expresion.expresion);
+      newQuestion = newQuestion.replace(expresion.completeExpresion,newValor);
+      console.log(newQuestion);
+    });
+
+    $('.statement').html(newQuestion);
+
+
   },
 
   //load html inputs for type the response and next evaluate this
   loadInputsResponse: function () {
-    // Aquí se puede usar Printer.generateInput para imprimir cada input con su respetivo label. La idea es
-    // buscar en el Objeto Question en la parte de las respuestas los labels de cada una, cargarlos con un input al lado
-    // para que un usuario pueda escribir la respuesta
+    Question.answers.forEach(function(answer, index){
+      var answerHtml = Printer.generateInput(answer.name, answer._id);
+      $('#inputResponses').append(answerHtml);
+    })
   },
 
   evalueteData: function () {
 
     $('.response').each(function () {
-      var response = $(this).val();
-      if (response != null && response != undefined && response != "") {
-        //$("#modal").modal();
-        Render.generateSolution(response, $(this).attr('id'));
+      var inputValue = $(this).val();
+
+      if (inputValue != null && inputValue != undefined && inputValue != "") {
+
+        var id =  $(this).attr('id');
+        var response = "";
+        var answerError = true;
+        Question.answers.forEach(function(answer, index){
+          if(answer._id == id ){
+
+            var code = answer.code.join("");
+            inputValue = Number(inputValue);
+            eval(code);
+          }
+        });
+        if(answerError) {
+          alert(response);
+        } else {
+          alert(response)
+        }
       } else {
-        alert("no puede enviar un campo vacio");
+        alert("No se puede enviar un campo vacio");
       }
     });
-    //correctResponses = 0;
   },
 
   //Load and execute random functions for each var
   loadVariables: function () {
-    var JsonVariables = Question.variables.variable;
-
-    if (JsonVariables) {
-
-      if (typeof JsonVariables.length != 'undefined') {
-        JsonVariables.forEach(function (variable) {
-          Variables[variable.id] = randomUtils.genRandom(variable);
-        });
-      } else {
-        Variables[JsonVariables.id] = randomUtils.genRandom(JsonVariables);
-      }
-      $.each(Variables, function (key, val) {
-        $("#infoVars").append("<p>" + key + " = " + val + "</p>");
-      });
-    }
-  },
-
-  //Generate Solution, evalue and print data
-  generateSolution: function (response, id) {
-
-    //Aquí vamos a comparar la respuesta del usuario con la respuesta real.
-
-    var formula, nameResponse;
-    correctAnswer = true;
-
-    var responsesTotal = 0;
-
-    if (typeof Responses.length != 'undefined') {
-      responsesTotal = Responses.length;
-      var res = $.grep(Responses, function (res) {
-        return res.id == id
-      })[0];
-      console.log(res, res.formula);
-      formula = res.formula;
-      nameResponse = res.nombre;
-
-    } else {
-      formula = Responses.formula;
-      nameResponse = Responses.nombre;
-      responsesTotal = 1;
-    }
-
-    console.log(formula);
-    try {
-
-      var solution = math.eval(replaceVariables(formula + ""));
-      if (response == solution && response != undefined) {
-        console.log("la respuesta es correcta");
-        correctResponses++;
-        solution = "Correcto: " + solution;
-        $("#Answer").append(Printer.alertModal(nameResponse, 'alert-success', solution));
-
-      } else {
-        correctAnswer = false;
-        console.log(this);
-
-        Render.checkErrors(response, id, function (ok) {
-          if (!ok) {
-            console.log("holi");
-            $("#Answer").append(Printer.alertModal(nameResponse, 'alert-warning', "Respuesta erronea"));
-          }
-        });
-      }
-
-      $("#modal").modal();
-    } catch (e) {
-      console.log(e);
-    }
-    //var feedback = correctAnswer? "Muy bien la respuesta es correcta" : "Una de las respuestas es incorrecta";
-    setInterval(function () {
-
-      var feedback = "respondiste " + correctResponses + " de " + responsesTotal;
-      $("#feedback").text(feedback);
-    }, 1000);
-
-  },
-
-  //compare genuine error with the user response
-  checkErrors: function (response, id, cb) {
-    var flag = false;
-    var res = $.grep(Responses, function (res) {
-      return res.id == id
-    })[0];
-
-    if (res && res.error_genuino && res.error_genuino != undefined) {
-
-      if (res.error_genuino.length != undefined) {
-        res.error_genuino.forEach(function (error) {
-          console.log(error);
-
-          try {
-            var evalError = math.eval(Render.replaceVariables(error.formula + ""));
-            console.log(evalError, response);
-
-            if (evalError == response && evalError != undefined) {
-              evalError = "Error: " + evalError;
-              $("#Answer").append(Printer.alertModal(res.nombre, "alert-warning ", error.retro_alimentacion));
-              cb(!flag);
-              flag = !flag;
-              return false; //stop forEach
-            }
-          } catch (e) {
-            console.log(e);
-          }
-        });
-
-      } else {
-
-        try {
-          var evalError = math.eval(Render.replaceVariables(res.error_genuino.formula + ""));
-          console.log(evalError, response);
-
-          if (evalError == response && evalError != undefined) {
-            evalError = "Error: " + evalError;
-            $("#Answer").append(Printer.alertModal(res.nombre, "alert-warning ", res.error_genuino.retro_alimentacion));
-            cb(!flag);
-            flag = !flag;
-            return false; //stop forEach
-          }
-        } catch (e) {
-          console.log(e);
-        }
-      }
-
-
-    }
-    if (flag == false) {
-      cb(flag);
-    }
-  },
-
-  //replace vairables from formula
-  replaceVariables: function (formula) {
-    //formula.split("#").join().replace(/,/gi, "");
-    var newFormula = formula.split("#").map(function (value, index) {
-      if (index % 2 != 0) {
-        return Variables[value]
-      } else return value;
+    console.log(Question);
+    Question.variables.variables.forEach(function(variable, index){
+      eval(variable.code);
     });
-    return newFormula.join().replace(/,/gi, "");
 
-  }
+    Variable = Variables;
+
+  },
 
 };
 
-function generateInput(name, id) {
-  return "<div class='input-group'>" +
-    "<span class='input-group-addon' id='ba'>" + name + "</span>" +
-    "<input class='form-control response' aria-describedby='ba' type='number' id='" + id + "'>" +
-    "</div>"
-}
