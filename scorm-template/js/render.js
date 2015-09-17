@@ -114,6 +114,7 @@ var Render = {
   loadVariables: function () {
     console.log(Question);
     Question.variables.variables.forEach(function(variable, index){
+      console.log(variable.code);
       eval(variable.code);
     });
 
