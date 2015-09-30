@@ -7,7 +7,7 @@ var routes = [
 
   //Scorm
   {path: '/scorms/',                     httpMethod: 'POST',   middleware: [Scorm.zipAndDownloadFile]},
-  {path: '/scorms/',                     httpMethod: 'PUT',    middleware: [Scorm.update]},
+  {path: '/questions/:questionid/scorms/', httpMethod: 'PUT',    middleware: [Scorm.update]},
   {path: '/scorms/download',             httpMethod: 'GET',    middleware: [Scorm.Download]},
   {path: '/scorms/uploadfiles',          httpMethod: 'POST',   middleware: [Scorm.uploadFiles]},
 

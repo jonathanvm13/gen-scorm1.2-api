@@ -3,6 +3,9 @@ var Question = mongoose.model('question');
 var Folder = mongoose.model('folder');
 var async = require('async');
 var uniqid = require('uniqid');
+var helper = require('../lib/helper.js');
+var QuestionHelper = helper.question;
+
 
 module.exports = {
 
@@ -58,8 +61,8 @@ module.exports = {
   },
 
   updateQuestion: function (req, res) {
-    var question = req.body.question,
-      questionId = req.params.questionid;
+    var question = req.body.question;
+    var questionId = req.params.questionid;
 
     Question.updateName(questionId, question.name, function (err, rows) {
       if (err) {
@@ -83,27 +86,18 @@ module.exports = {
   },
 
   setData: function (req, res) {
-    var question = req.body.question,
-      questionId = req.params.questionid;
+    var question = req.body.question;
+    var questionId = req.params.questionid;
 
-    Question.updateData(questionId, question.data, function (err, rows) {
+    QuestionHelper.updateData(questionId, question.data, function (err, rows) {
       if (err) {
         return res.status(400).json({
-          ok: false,
+          ok:false,
           message: err.message
         });
       }
 
-      if (rows.n == 0) {
-        return res.status(400).json({
-          ok: false,
-          message: "The question does not exist"
-        });
-      }
-
-      res.status(200).json({
-        ok: true
-      });
+      res.status(200).json({ok:true});
     });
   },
 

@@ -4,6 +4,7 @@ var helper = require('../lib/helper.js');
 var path = require('path');
 var mime = require('mime');
 var fs = require('fs');
+var QuestionHelper = helper.question;
 
 module.exports = {
 
@@ -29,19 +30,27 @@ module.exports = {
   },
 
   update: function (req, res) {
-
     var question = req.body.question;
+    var questionId = req.params.questionid;
 
-    fs.writeFile("./scorm-template/js/xml-question.js", "var question = " + JSON.stringify(question) + "; question = JSON.parse(question);window.question = window.question || question;", function (err) {
+    QuestionHelper.updateData(questionId, question, function (err, rows) {
       if (err) {
-        return res.status(400).jsonp({ok: false});
+        return res.status(400).json({
+          ok:false,
+          message: err.message
+        });
       }
+      var route = "./scorm-template/js/xml-question.js";
+      var data = "var question = " + JSON.stringify(question) + "; question = JSON.parse(question);window.question = window.question || question;";
 
-      res.status(200).jsonp({ok: true});
+      fs.writeFile(route, data, function (err) {
+        if (err) {
+          return res.status(400).jsonp({ok: false});
+        }
+
+        res.status(200).jsonp({ok: true});
+      });
     });
-
-    //helper.createManifest();
-
   },
 
   Download: function (req, res) {

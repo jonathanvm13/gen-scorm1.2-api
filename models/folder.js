@@ -59,7 +59,7 @@ folder.statics.getAllData = function (folderId, cb) {
     [
       function (next) {
         self.findById(folderId)
-          .populate('questions folders', 'name questions folders', {
+          .populate('questions folders', 'name questions folders data owner parent_folder users', {
             $or: [
               {delete: false},
               {delete: {$exists: false}}
