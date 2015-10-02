@@ -6,6 +6,9 @@ var mongoose = require('mongoose'),
   jwt = require('jsonwebtoken'),
   uniqid = require('uniqid');
 
+var Question = mongoose.model('question');
+
+
 module.exports = {
 
   create: function (req, res) {
