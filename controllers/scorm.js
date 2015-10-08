@@ -5,6 +5,7 @@ var path = require('path');
 var mime = require('mime');
 var fs = require('fs');
 var QuestionHelper = helper.question;
+var _ = require('lodash');
 
 module.exports = {
 
@@ -62,7 +63,13 @@ module.exports = {
   },
 
   uploadFiles: function (req, res) {
-    return res.status(200).jsonp({ok: true});
+    var imageFile;
+
+    _.forIn(req.files, function(file, field) {
+      imageFile = file.name;
+    });
+
+    return res.status(200).jsonp({url: "http://104.131.58.229:4000/static/" + imageFile});
   }
 
 };
