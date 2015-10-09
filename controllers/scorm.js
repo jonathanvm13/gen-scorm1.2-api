@@ -12,19 +12,47 @@ module.exports = {
 
   zipAndDownloadFile: function (req, res) {
     var questionId = req.params.questionid;
-
-    var folderRoute = "./questions/" + questionId;
+    var originFolderRoute = "./questions/" + questionId;
+    var copyFolderRoute = "./questions/" + questionId + "-scorm";
     var zipRoute = "./questions/" + questionId + ".zip";
+    var scormQuestionDataRoute = copyFolderRoute + "/js/xml-question.js";
 
-    helper.zipFile(folderRoute, zipRoute, function (ok) {
-      if (!ok) {
-        return res.status(400).jsonp({ok: false});
+    //Copy question folder for updated her data before zip
+    helper.copyFolderQuestion(originFolderRoute, copyFolderRoute);
+
+    QuestionHelper.getById(questionId, function (err, question) {
+      if (err || !question) {
+        return res.status(400).json({
+          ok: false,
+          message: "Oops! Something went wrong!"
+        });
       }
 
-      return res.status(200).jsonp({ok: true});
-    });
+      if (question.images && question.images.length > 0) {
+        helper.copyImagesToQuestionFolder(copyFolderRoute, question.images);
+      }
 
+      var originalData = JSON.stringify(question.data);
+      var modifiedData = helper.updateImagesUrls(originalData);
+      var data = "var question = " + modifiedData + "; question = JSON.parse(question);window.question = window.question || question;";
 
+      fs.writeFile(scormQuestionDataRoute, data, function (err) {
+        if (err) {
+          return res.status(400).jsonp({ok: false});
+        }
+
+        helper.zipFile(copyFolderRoute, zipRoute, function (ok) {
+          if (!ok) {
+            return res.status(400).jsonp({ok: false, message: "Oops! Something went wrong!"});
+          }
+
+          //clean if folder exist
+          //helper.deleteFolder(copyFolderRoute);
+
+          return res.status(200).jsonp({ok: true});
+        });
+      });
+    })
   },
 
   update: function (req, res) {
@@ -58,7 +86,7 @@ module.exports = {
   Download: function (req, res) {
     var questionId = req.params.questionid;
 
-    var file =  "./questions/" + questionId + ".zip";
+    var file = "./questions/" + questionId + ".zip";
 
     res.setHeader('Content-disposition', 'attachment; filename=' + path.basename(file));
     res.setHeader('Content-type', mime.lookup(file));
@@ -67,13 +95,23 @@ module.exports = {
   },
 
   uploadFiles: function (req, res) {
+    var questionId = req.params.questionid;
     var imageFile;
 
     _.forIn(req.files, function (file, field) {
       imageFile = file.name;
     });
 
-    return res.status(200).jsonp({url: Config.apiUrl + "/static/" + imageFile});
+    QuestionHelper.addImage(questionId, imageFile, function (err) {
+      if (err) {
+        return res.status(400).json({
+          ok: false,
+          message: err.message || "Oops! Something went wrong!"
+        });
+      }
+
+      return res.status(200).jsonp({url: Config.apiUrl + "/static/" + imageFile});
+    })
   }
 
 };

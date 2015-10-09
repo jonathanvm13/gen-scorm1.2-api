@@ -10,6 +10,7 @@ var question = mongoose.Schema(
     parent_folder: {type: String, required: true, ref: 'folder'},
     owner: {type: String, required: true, ref: 'user'},
     users: [{type: String, required: true, ref: 'user'}],
+    images: [{type: String}],
     delete: Boolean
   }
 );
