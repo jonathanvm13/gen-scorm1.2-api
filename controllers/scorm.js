@@ -36,12 +36,17 @@ module.exports = {
 
     QuestionHelper.updateData(questionId, question, function (err, rows) {
       if (err) {
+        console.log("Entro aqui");
         return res.status(400).json({
           ok:false,
           message: err.message
         });
       }
-      var route = "./scorm-template/js/xml-question.js";
+
+      //Create or update question folder with scorm template
+      helper.copyScormTemplate(questionId);
+
+      var route = "./questions/" + questionId + "/js/xml-question.js";
       var data = "var question = " + JSON.stringify(question) + "; question = JSON.parse(question);window.question = window.question || question;";
 
       fs.writeFile(route, data, function (err) {
