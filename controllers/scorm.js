@@ -11,24 +11,20 @@ var Config = require("../config/config");
 module.exports = {
 
   zipAndDownloadFile: function (req, res) {
-    var question = req.body.question;
+    var questionId = req.params.questionid;
 
-    fs.writeFile("./scorm-template/js/xml-question.js", "var question = " + JSON.stringify(question) + "; window.question = window.question || question;", function (err) {
-      if (err) {
+    var folderRoute = "./questions/" + questionId;
+    var zipRoute = "./questions/" + questionId + ".zip";
+
+    helper.zipFile(folderRoute, zipRoute, function (ok) {
+      if (!ok) {
         return res.status(400).jsonp({ok: false});
       }
 
-      helper.zipFile(function (ok) {
-        if (!ok) {
-          return res.status(400).jsonp({ok: false});
-        }
-
-        return res.status(200).jsonp({ok: true});
-      });
-
+      return res.status(200).jsonp({ok: true});
     });
 
-    //helper.createManifest();
+
   },
 
   update: function (req, res) {
@@ -38,7 +34,7 @@ module.exports = {
     QuestionHelper.updateData(questionId, question, function (err, rows) {
       if (err) {
         return res.status(400).json({
-          ok:false,
+          ok: false,
           message: err.message
         });
       }
@@ -60,7 +56,10 @@ module.exports = {
   },
 
   Download: function (req, res) {
-    var file = './scorm.zip';
+    var questionId = req.params.questionid;
+
+    var file =  "./questions/" + questionId + ".zip";
+
     res.setHeader('Content-disposition', 'attachment; filename=' + path.basename(file));
     res.setHeader('Content-type', mime.lookup(file));
 
@@ -70,7 +69,7 @@ module.exports = {
   uploadFiles: function (req, res) {
     var imageFile;
 
-    _.forIn(req.files, function(file, field) {
+    _.forIn(req.files, function (file, field) {
       imageFile = file.name;
     });
 

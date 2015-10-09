@@ -6,10 +6,10 @@ var Scorm = require('../controllers/scorm'),
 var routes = [
 
   //Scorm
-  {path: '/scorms/',                     httpMethod: 'POST',   middleware: [Scorm.zipAndDownloadFile]},
-  {path: '/questions/:questionid/scorms/', httpMethod: 'PUT',    middleware: [Scorm.update]},
-  {path: '/scorms/download',             httpMethod: 'GET',    middleware: [Scorm.Download]},
-  {path: '/scorms/uploadfiles',          httpMethod: 'POST',   middleware: [Scorm.uploadFiles]},
+  {path: '/questions/:questionid/scorms',  httpMethod: 'POST',   middleware: [Scorm.zipAndDownloadFile]},
+  {path: '/questions/:questionid/scorms',  httpMethod: 'PUT',    middleware: [Scorm.update]},
+  {path: '/questions/:questionid/scorms',  httpMethod: 'GET',    middleware: [Scorm.Download]},
+  {path: '/scorms/uploadfiles',            httpMethod: 'POST',   middleware: [Scorm.uploadFiles]},
 
   // Folder
   {path: '/folders/:folderid/folders',   httpMethod: 'POST',   middleware: [FolderCtrl.create]},
