@@ -129,9 +129,13 @@ module.exports = {
   sharedFolder: function (req, res) {
     var folderIdToAdd = req.params.folderid;
     var email = req.body.user.email;
-
     User.getByEmail(email, 'root_shared_folder', function (err, user) {
-      var rootSharedFolderId = user.root_shared_folder;
+      if(!user) 
+	return res.status(400).json({
+	  ok: false,
+	  message: "The motherfucker email don't exist in the data base"
+	});
+	var rootSharedFolderId = user.root_shared_folder;
 
       if (Folder.hasUser(folderIdToAdd, user._id)) {
         return res.status(400).json({
@@ -141,7 +145,9 @@ module.exports = {
       }
 
       Folder.addFolder(rootSharedFolderId, folderIdToAdd, function (err) {
-        if (err) {
+        console.warn("npi");
+	if (err) {
+	  console.warn("por que???");
           return res.status(400).json({
             ok: false,
             message: err.message
