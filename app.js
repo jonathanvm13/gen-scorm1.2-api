@@ -27,6 +27,8 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(jwt({ secret: 'zVTcnZgLTWoNxAidDbOwQQuWfKRwVC'}).unless({path: ['/api/users/login', '/api/users', /\/static/]}));
 app.use('/static', express.static('images'));
+app.use('/static', express.static('questions'));
+
 
 require('./routes/config.js')(app);
 

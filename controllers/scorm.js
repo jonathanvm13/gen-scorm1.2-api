@@ -6,6 +6,7 @@ var mime = require('mime');
 var fs = require('fs');
 var QuestionHelper = helper.question;
 var _ = require('lodash');
+var Config = require("../config/config");
 
 module.exports = {
 
@@ -36,7 +37,6 @@ module.exports = {
 
     QuestionHelper.updateData(questionId, question, function (err, rows) {
       if (err) {
-        console.log("Entro aqui");
         return res.status(400).json({
           ok:false,
           message: err.message
@@ -54,7 +54,7 @@ module.exports = {
           return res.status(400).jsonp({ok: false});
         }
 
-        res.status(200).jsonp({ok: true});
+        res.status(200).jsonp({ok: true, url: Config.apiUrl + "/static/" + questionId + "/launch.html"});
       });
     });
   },
@@ -74,7 +74,7 @@ module.exports = {
       imageFile = file.name;
     });
 
-    return res.status(200).jsonp({url: "http://104.131.58.229:4000/static/" + imageFile});
+    return res.status(200).jsonp({url: Config.apiUrl + "/static/" + imageFile});
   }
 
 };
