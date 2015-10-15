@@ -10,7 +10,7 @@ var Config = require("../config/config");
 
 module.exports = {
 
-  zipAndDownloadFile: function (req, res) {
+  zipScorm: function (req, res) {
     var questionId = req.params.questionid;
     var originFolderRoute = "./questions/" + questionId;
     var copyFolderRoute = "./questions/" + questionId + "-scorm";
@@ -47,7 +47,7 @@ module.exports = {
           }
 
           //clean if folder exist
-          //helper.deleteFolder(copyFolderRoute);
+          helper.deleteFolder(copyFolderRoute);
 
           return res.status(200).jsonp({ok: true});
         });
@@ -85,7 +85,6 @@ module.exports = {
 
   Download: function (req, res) {
     var questionId = req.params.questionid;
-
     var file = "./questions/" + questionId + ".zip";
 
     res.setHeader('Content-disposition', 'attachment; filename=' + path.basename(file));
@@ -110,7 +109,7 @@ module.exports = {
         });
       }
 
-      return res.status(200).jsonp({url: Config.apiUrl + "/static/" + imageFile});
+      res.status(200).jsonp({url: Config.apiUrl + "/static/" + imageFile});
     })
   }
 
