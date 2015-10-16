@@ -1,10 +1,16 @@
 var Printer = {
 
-	generateInput: function(name, id) {
-		return "<div class='input-group'>"+ 
-			"<span class='input-group-addon' id='ba'>"+ name +"</span>"+
-			"<input class='form-control response' aria-describedby='ba' type='number' id='"+ id +"'>"+
-			"</div>"
+	generateInput: function(name, id, showLabel) {
+		var cssClass = "input-group";
+		if(!showLabel)
+			cssClass = "form-group";
+		var generatedHTML =  "<div class='"+ (cssClass)  +"'>";
+		if(showLabel){
+			generatedHTML += "<span class='input-group-addon' id='ba'>"+ name +"</span>";
+		}
+		generatedHTML += 	"<input class='form-control response' aria-describedby='ba' type='number' id='"+ id +"'>";
+		generatedHTML += "</div>";
+		return generatedHTML;
 	},
 
 	//response for modal
