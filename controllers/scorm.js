@@ -101,6 +101,13 @@ module.exports = {
       imageFile = file.name;
     });
 
+    if(!imageFile){
+      return res.status(400).json({
+        ok: false,
+        message:  "File was not sent"
+      });
+    }
+
     QuestionHelper.addImage(questionId, imageFile, function (err) {
       if (err) {
         return res.status(400).json({
