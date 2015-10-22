@@ -111,9 +111,14 @@ var Render = {
     var inputValue = {};
     $('.response').each(function () {
       var input = $(this);
-      console.log(input);
-      inputValue[input.attr('id')] = Number(input.val());
+      console.log(input.val());
+      if(input.val() == "" || input.val() == null )
+        inputValue[input.attr('id')]
+      else
+        inputValue[input.attr('id')] = Number(Number(input.val()).toFixed(Question.answer.precision));
+      console.log(inputValue);
     });
+
     var response = "";
     var answerError = true;
     var code = Question.answer.code.join("");
