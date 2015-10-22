@@ -75,39 +75,59 @@ var Render = {
 
   //load html inputs for type the response and next evaluate this
   loadInputsResponse: function () {
-    Question.answers.forEach(function(answer, index){
-      var answerHtml = Printer.generateInput(answer.name, answer._id);
+    Question.answer.names.forEach(function(answerName, index){
+      var answerHtml = Printer.generateInput(answerName, answerName, Question.answer.showLabel);
       $('#inputResponses').append(answerHtml);
     })
   },
 
   evalueteData: function () {
 
+    // $('.response').each(function () {
+    //   var inputValue = $(this).val();
+
+    //   if (inputValue != null && inputValue != undefined && inputValue != "") {
+
+    //     var id =  $(this).attr('id');
+    //     var response = "";
+    //     var answerError = true;
+    //     Question.answers.forEach(function(answer, index){
+    //       if(answer._id == id ){
+
+    //         var code = answer.code.join("");
+    //         inputValue = Number(inputValue);
+    //         eval(code);
+    //       }
+    //     });
+    //     if(answerError) {
+    //       alert(response);
+    //     } else {
+    //       alert(response)
+    //     }
+    //   } else {
+    //     alert("No se puede enviar un campo vacio");
+    //   }
+    // });
+    var inputValue = {};
     $('.response').each(function () {
-      var inputValue = $(this).val();
-
-      if (inputValue != null && inputValue != undefined && inputValue != "") {
-
-        var id =  $(this).attr('id');
-        var response = "";
-        var answerError = true;
-        Question.answers.forEach(function(answer, index){
-          if(answer._id == id ){
-
-            var code = answer.code.join("");
-            inputValue = Number(inputValue);
-            eval(code);
-          }
-        });
-        if(answerError) {
-          alert(response);
-        } else {
-          alert(response)
-        }
-      } else {
-        alert("No se puede enviar un campo vacio");
-      }
+      var input = $(this);
+      console.log(input.val());
+      if(input.val() == "" || input.val() == null )
+        inputValue[input.attr('id')]
+      else
+        inputValue[input.attr('id')] = Number(Number(input.val()).toFixed(Question.answer.precision));
+      console.log(inputValue);
     });
+
+    var response = "";
+    var answerError = true;
+    var code = Question.answer.code.join("");
+    eval(code);
+    if(answerError) {
+      alert(response);
+    } else {
+      alert(response)
+    }
   },
 
   //Load and execute random functions for each var
