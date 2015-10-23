@@ -72,6 +72,15 @@ module.exports = {
 
       var route = "./questions/" + questionId + "/js/xml-question.js";
       var data = "var question = " + JSON.stringify(question) + "; question = JSON.parse(question);window.question = window.question || question;";
+      var routeManifest = "./questions/" + questionId + "/imsmanifest.xml";
+
+      var metadata = JSON.parse(question).metadata;
+
+      console.log("Metadata");
+
+      console.log(metadata);
+
+
 
       fs.writeFile(route, data, function (err) {
         if (err) {
@@ -79,6 +88,26 @@ module.exports = {
         }
 
         res.status(200).jsonp({ok: true, url: Config.apiUrl + "/static/" + questionId + "/launch.html"});
+      });
+
+      fs.readFile(routeManifest, 'utf8', function (err, xmlManifest) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+
+        console.log("Manifest");
+        console.log(xmlManifest);
+
+
+        xmlManifest = helper.createManifest(xmlManifest, metadata);
+
+        fs.writeFile(routeManifest, xmlManifest, function (err) {
+          if (err) {
+            console.log(err);
+            return;
+          }
+        });
       });
     });
   },

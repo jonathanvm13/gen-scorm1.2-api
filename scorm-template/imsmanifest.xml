@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2" identifier="MANIFEST-CD0D330714CC939AE06CC2C633568D57" xsi:schemaLocation="http://www.imsproject.org/xsd/imscp_rootv1p1p2 imscp_rootv1p1p2.xsd http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd http://www.adlnet.org/xsd/adlcp_rootv1p2 adlcp_rootv1p2.xsd">
 
+
+
     <metadata>
         <schema>ADL SCORM</schema>
         <schemaversion>1.2</schemaversion>
@@ -8,22 +10,22 @@
         <imsmd:lom>
             <imsmd:general>
                 <imsmd:title>
-                    <imsmd:langstring xml:lang = "en_US">Flight Training 101</imsmd:langstring>
+                    <imsmd:langstring xml:lang = "en_US">_title_</imsmd:langstring>
                 </imsmd:title>
                 <imsmd:description>
                     <imsmd:langstring xml:lang = "en_US">
-                        This course is an introduction to flying.
+                        _description_
                     </imsmd:langstring>
                 </imsmd:description>
                 <imsmd:keywords>
-                    <imsmd:langstring xml:lang = "en_US">Flying</imsmd:langstring>
-                    <imsmd:langstring xml:lang = "en_US">Flying 101</imsmd:langstring>
-                    <imsmd:langstring xml:lang = "en_US">SCORM 1.2</imsmd:langstring>
+                    <imsmd:langstring xml:lang = "en_US">_keywords_</imsmd:langstring>
                 </imsmd:keywords>
-
+                <imsmd:coverage>
+                    <imsmd:langstring xml:lang = "en_US">_coverage_</imsmd:langstring>
+                </imsmd:coverage>
                 <imsmd:cost>
                     <imsmd:source>
-                        <imsmd:langstring></imsmd:langstring>
+                        <imsmd:langstring>LOMv1.0</imsmd:langstring>
                     </imsmd:source>
                     <imsmd:value>
                         <imsmd:langstring>No</imsmd:langstring>
@@ -46,67 +48,39 @@
                         <imsmd:langstring>Exercise</imsmd:langstring>
                     </imsmd:value>
                 </imsmd:learningresourcetype>
-
-                <imsmd:context>
-                    <imsmd:source>
-                        <imsmd:langstring>LOMv1.0</imsmd:langstring>
-                    </imsmd:source>
-                    <imsmd:value>
-                        <imsmd:langstring>Educación post-secundaria no superior</imsmd:langstring>
-                    </imsmd:value>
-                </imsmd:context>
-
             </imsmd:general>
 
 
-
-
-            <imsmd:classification></imsmd:classification>
-
-
-            <imsmd:metametadata>
+            <imsmd:lifecycle>
                 <imsmd:contribute>
                     <imsmd:role>
                         <imsmd:source>
-                            <imsmd:langstring xml:lang="x-none">LOMv1.0</imsmd:langstring>
+                            <imsmd:langstring>LOMv1.0</imsmd:langstring>
                         </imsmd:source>
                         <imsmd:value>
-                            <imsmd:langstring xml:lang="x-none">Creator</imsmd:langstring>
+                            <imsmd:langstring>_autor_</imsmd:langstring>
                         </imsmd:value>
                     </imsmd:role>
-                    <imsmd:centity>
-                        <imsmd:vcard>BEGIN:VCARD FN:Dr.Colin D. Milligan END:VCARD</imsmd:vcard>
-                    </imsmd:centity>
+                    <imsmd:entity>_entity_</imsmd:entity>
                     <imsmd:date>
-                        <imsmd:datetime>2003-07-08</imsmd:datetime>
+                        <imsmd:datetime>_date_</imsmd:datetime>
                     </imsmd:date>
-                </imsmd:contribute>
-                <imsmd:metadatascheme>UKCMF</imsmd:metadatascheme>
-                <imsmd:language>en</imsmd:language>
-            </imsmd:metametadata>
 
+                </imsmd:contribute>
+            </imsmd:lifecycle>4
+
+            <imsmd:metametadata>
+                <imsmd:language>_language_</imsmd:language>
+            </imsmd:metametadata>
 
         </imsmd:lom>
     </metadata>
-
-
-
-    <organizations default="ORG-402C69FB392A2AFA4EF894C37714DBDC">
-        <organization identifier="ORG-402C69FB392A2AFA4EF894C37714DBDC" structure="hierarchical">
-            <title>Organization</title>
-            <item identifier="ITEM-3765B0A9B9D055562AFE82C84BA61318" identifierref="RES-8A6F2A66D7F753E8895746442BB2D37D" isvisible="true">
-                <title>Item</title>
-            </item>
-        </organization>
-    </organizations>
 
     <resources>
         <resource identifier="RES-8A6F2A66D7F753E8895746442BB2D37D" type="webcontent" href="launch.html" adlcp:scormtype="sco">
             <file href="launch.html" />
             <file href="css/bootstrap.min.css" />
             <file href="css/main.css" />
-
-
         </resource>
     </resources>
 
