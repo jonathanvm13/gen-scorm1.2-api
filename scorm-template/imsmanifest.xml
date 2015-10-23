@@ -58,16 +58,16 @@
                             <imsmd:langstring>LOMv1.0</imsmd:langstring>
                         </imsmd:source>
                         <imsmd:value>
-                            <imsmd:langstring>_autor_</imsmd:langstring>
+                            <imsmd:langstring>Author</imsmd:langstring>
                         </imsmd:value>
                     </imsmd:role>
-                    <imsmd:entity>_entity_</imsmd:entity>
+                    <imsmd:entity>_autor_</imsmd:entity>
                     <imsmd:date>
                         <imsmd:datetime>_date_</imsmd:datetime>
                     </imsmd:date>
 
                 </imsmd:contribute>
-            </imsmd:lifecycle>4
+            </imsmd:lifecycle>
 
             <imsmd:metametadata>
                 <imsmd:language>_language_</imsmd:language>
@@ -81,6 +81,7 @@
             <file href="launch.html" />
             <file href="css/bootstrap.min.css" />
             <file href="css/main.css" />
+
         </resource>
     </resources>
 
