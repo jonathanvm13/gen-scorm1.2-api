@@ -8,8 +8,8 @@ var express = require('express'),
   bodyParser = require('body-parser'),
   multer = require('multer');
 
+var Scorm = require('../controllers/scorm');
 var uniqid = require('uniqid');
-
 var router = express.Router();
 
 module.exports = function (app) {
@@ -22,8 +22,17 @@ module.exports = function (app) {
     arangeRoutes(routes, router);
   });
 
+  var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      const url = req.url;
+      const questionId = url.match("/api/questions/(.*)/scorms/uploadfiles")[1];
+
+      cb(null, `./questions/${questionId}/images`);
+    }
+  });
+
   app.use(multer({
-    dest: './images/',
+    storage: storage,
     rename: function (fieldname, filename) {
       var name = uniqid();
       return name;
@@ -35,7 +44,7 @@ module.exports = function (app) {
       console.log(file.fieldname + ' uploaded to  ' + file.path);
       done = true;
     }
-  }));
+  }).any());
 
   // REGISTER OUR ROUTES -------------------------------
   // all of our routes will be prefixed with /api

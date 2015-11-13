@@ -5,6 +5,8 @@ var async = require('async');
 var uniqid = require('uniqid');
 var helper = require('../lib/helper.js');
 var QuestionHelper = helper.question;
+var Config = require("../config/config");
+var fs = require('fs');
 
 
 module.exports = {
@@ -49,6 +51,15 @@ module.exports = {
           });
         }
 
+        //Create or update question folder with scorm template
+        helper.copyScormTemplate(question._id);
+
+
+        var route = "./questions/" + question._id + "/js/xml-question.js";
+        var data = "var question = " + JSON.stringify(question) + "; question = JSON.parse(question);window.question = window.question || question;";
+
+        fs.writeFile(route, data, function (err) { console.log(err)});
+
         res.status(200).json({
           ok: true,
           question: {
@@ -56,6 +67,7 @@ module.exports = {
             name: question.name
           }
         });
+
       }
     );
   },

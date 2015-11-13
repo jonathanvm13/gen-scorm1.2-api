@@ -14,6 +14,8 @@ module.exports = {
     var copyFolderRoute = "./questions/" + questionId + "-scorm";
     var zipRoute = "./questions/" + questionId + ".zip";
     var scormQuestionDataRoute = copyFolderRoute + "/js/xml-question.js";
+    var routeManifest = copyFolderRoute + "/imsmanifest.xml";
+
 
     //Copy question folder for updated her data before zip
     helper.copyFolderQuestion(originFolderRoute, copyFolderRoute);
@@ -26,29 +28,34 @@ module.exports = {
         });
       }
 
-      if (question.images && question.images.length > 0) {
-        helper.copyImagesToQuestionFolder(copyFolderRoute, question.images);
-      }
-
       var originalData = JSON.stringify(question.data);
       var modifiedData = helper.updateImagesUrls(originalData);
       var data = "var question = " + modifiedData + "; question = JSON.parse(question);window.question = window.question || question;";
+      var metadata = question.metadata;
+
+      //Refactorizar, muchos callback (Usar promises)
 
       fs.writeFile(scormQuestionDataRoute, data, function (err) {
         if (err) {
           return res.status(400).jsonp({ok: false});
         }
 
-        helper.zipFile(copyFolderRoute, zipRoute, function (ok) {
-          if (!ok) {
-            return res.status(400).jsonp({ok: false, message: "Oops! Something went wrong!"});
+        helper.writeManifest(routeManifest, metadata, function(err){
+          if (err) {
+            return res.status(400).jsonp({ok: false});
           }
 
-          //clean if folder exist
-          helper.deleteFolder(copyFolderRoute);
+          helper.zipFile(copyFolderRoute, zipRoute, function (ok) {
+            if (!ok) {
+              return res.status(400).jsonp({ok: false, message: "Oops! Something went wrong!"});
+            }
 
-          return res.status(200).jsonp({ok: true});
-        });
+            //clean if folder exist
+            helper.deleteFolder(copyFolderRoute);
+
+            return res.status(200).jsonp({ok: true});
+          });
+        })
       });
     })
   },
@@ -65,13 +72,8 @@ module.exports = {
         });
       }
 
-      //Create or update question folder with scorm template
-      helper.copyScormTemplate(questionId);
-
       var route = "./questions/" + questionId + "/js/xml-question.js";
       var data = "var question = " + JSON.stringify(question) + "; question = JSON.parse(question);window.question = window.question || question;";
-      var routeManifest = "./questions/" + questionId + "/imsmanifest.xml";
-      var metadata = JSON.parse(question).metadata;
 
       fs.writeFile(route, data, function (err) {
         if (err) {
@@ -79,26 +81,6 @@ module.exports = {
         }
 
         res.status(200).jsonp({ok: true, url: Config.apiUrl + "/static/" + questionId + "/launch.html"});
-      });
-
-      fs.readFile(routeManifest, 'utf8', function (err, xmlManifest) {
-        if (err) {
-          console.log(err);
-          return;
-        }
-
-        console.log("Manifest");
-        console.log(xmlManifest);
-
-
-        xmlManifest = helper.createManifest(xmlManifest, metadata);
-
-        fs.writeFile(routeManifest, xmlManifest, function (err) {
-          if (err) {
-            console.log(err);
-            return;
-          }
-        });
       });
     });
   },
@@ -118,7 +100,7 @@ module.exports = {
     var imageFile;
 
     _.forIn(req.files, function (file, field) {
-      imageFile = file.name;
+      imageFile = file.filename;
     });
 
     if(!imageFile){
@@ -128,16 +110,7 @@ module.exports = {
       });
     }
 
-    QuestionHelper.addImage(questionId, imageFile, function (err) {
-      if (err) {
-        return res.status(400).json({
-          ok: false,
-          message: err.message || "Oops! Something went wrong!"
-        });
-      }
-
-      res.status(200).jsonp({url: Config.apiUrl + "/static/" + imageFile});
-    })
+    res.status(200).jsonp({url: Config.apiUrl + "/static/" + questionId + "/images/" + imageFile});
   }
 
 };

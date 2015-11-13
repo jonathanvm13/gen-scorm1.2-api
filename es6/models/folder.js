@@ -104,7 +104,7 @@ folder.statics.getAllData = function (folderId, cb) {
         });
       },
       function (data, next) {
-        rootFolder = data.rootFolder.toJSON();
+        let rootFolder = data.rootFolder.toJSON();
 
         rootFolder.folders = _.map(rootFolder.folders, function (folder) {
           var folders = folder.folders;

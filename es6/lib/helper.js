@@ -46,17 +46,8 @@ module.exports = {
     cb(true);
   },
 
-  copyImagesToQuestionFolder: function (copyFolderRoute, images) {
-    fsx.removeSync(copyFolderRoute + '/images');
-    fsx.mkdirsSync( copyFolderRoute + '/images');
-
-    images.map(function (imageName) {
-      fsx.copySync(path.resolve(__dirname, '../images/' + imageName), copyFolderRoute + '/images/' + imageName);
-    });
-  },
-
   copyScormTemplate: function (folderName) {
-    fsx.copySync(path.resolve(__dirname, '../scorm-template'), path.resolve(__dirname, '../questions/' + folderName));
+    fsx.copySync(path.resolve(__dirname, '../../scorm-template'), path.resolve(__dirname, '../../questions/' + folderName));
   },
 
   copyFolderQuestion: function (folderRoute, copyFolderRoute) {
@@ -72,18 +63,32 @@ module.exports = {
     return modifiedData;
   },
 
-  createManifest: function (xmlManifest, metadata) {
+  writeManifest: function (routeManifest, metadata, next){
+    fs.readFile(routeManifest, 'utf8', function (err, xmlManifest) {
+      if (err) {
+        next(err);
+        return;
+      }
 
-    xmlManifest = xmlManifest.replace(/_title_/, metadata.title );
-    xmlManifest = xmlManifest.replace(/_description_/, metadata.description );
-    xmlManifest = xmlManifest.replace(/_keywords_/, metadata.keywords );
-    xmlManifest = xmlManifest.replace(/_coverage_/, metadata.coverage );
-    xmlManifest = xmlManifest.replace(/_autor_/, metadata.autor );
-    xmlManifest = xmlManifest.replace(/_entity_/, metadata.editor );
-    xmlManifest = xmlManifest.replace(/_date_/, metadata.date );
-    xmlManifest = xmlManifest.replace(/_language_/, metadata.language );
+      if(metadata) {
+        xmlManifest = xmlManifest.replace(/_title_/, metadata.title);
+        xmlManifest = xmlManifest.replace(/_description_/, metadata.description);
+        xmlManifest = xmlManifest.replace(/_keywords_/, metadata.keywords);
+        xmlManifest = xmlManifest.replace(/_coverage_/, metadata.coverage);
+        xmlManifest = xmlManifest.replace(/_autor_/, metadata.autor);
+        xmlManifest = xmlManifest.replace(/_entity_/, metadata.editor);
+        xmlManifest = xmlManifest.replace(/_date_/, metadata.date);
+        xmlManifest = xmlManifest.replace(/_language_/, metadata.language);
+      }
 
-    return xmlManifest;
+      fs.writeFile(routeManifest, xmlManifest, function (err) {
+        if (err) {
+          next(err);
+          return;
+        }
+        next();
+      });
+    });
   },
 
   question: {
