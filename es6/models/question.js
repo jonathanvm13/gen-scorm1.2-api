@@ -1,3 +1,4 @@
+
 var mongoose = require('mongoose'),
   async = require('async'),
   Schema = mongoose.Schema;
@@ -18,7 +19,7 @@ var question = mongoose.Schema(
 question.set('toJSON', {
   transform: function (doc, ret, options) {
     delete ret.__v;
-    delete folder;
+    delete ret.folder;
   }
 });
 

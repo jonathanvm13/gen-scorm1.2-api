@@ -1,7 +1,7 @@
 var Scorm = require('../controllers/scorm'),
     UserCtrl = require('../controllers/user'),
     QuestionCtrl = require('../controllers/question'),
-    FolderCtrl = require('../controllers/folder');
+    FolderCtrl = require('../controllers/folder'),
     VariableCtrl = require('../controllers/variable');
 
 var routes = [
@@ -11,6 +11,7 @@ var routes = [
   {path: '/questions/:questionid/scorms',  httpMethod: 'PUT',    middleware: [Scorm.update]},
   {path: '/questions/:questionid/scorms',  httpMethod: 'GET',    middleware: [Scorm.Download]},
   {path: '/questions/:questionid/scorms/uploadfiles',   httpMethod: 'POST',   middleware: [Scorm.uploadFiles]},
+
 
   // Folder
   {path: '/folders/:folderid/folders',   httpMethod: 'POST',   middleware: [FolderCtrl.create]},
@@ -34,5 +35,6 @@ var routes = [
   {path: '/variables/validate',          httpMethod: 'POST', middleware: [VariableCtrl.validate]}
 
 ];
+
 
 module.exports = routes;
