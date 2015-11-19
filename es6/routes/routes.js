@@ -32,6 +32,7 @@ var routes = [
   {path: '/users/folders/:folderid',     httpMethod: 'POST',   middleware: [UserCtrl.sharedFolder]},
   {path: '/users/folders',               httpMethod: 'GET',    middleware: [UserCtrl.getRootsFolders]},
 
+  //Variables
   {path: '/variables/validate',          httpMethod: 'POST', middleware: [VariableCtrl.validate]}
 
 ];
