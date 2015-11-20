@@ -12,10 +12,8 @@ module.exports = {
       var scope = {};
       for(var key  in variables) {
         if(variables.hasOwnProperty(key)){
-
           var variable = variables[key];
-          //scope[variable.name] = variable.getPossibleValue(variables);
-          scope[variable.name] = 1;
+          scope[variable.name] = variable.possibleValue;
         }
       }
 
@@ -43,6 +41,8 @@ module.exports = {
     }
     expression = expression.toString();
     var evaluableVariables = Variable.retrieveEvaluableVariables(variables);
+    console.log(evaluableVariables);
+    console.log(">>>>>>>>>>>>>>");
     var match = expression.match(/\_[A-Za-z]/g) || [];
     var compoundOfEvaluable = match.every((varName) => evaluableVariables[varName] != null);
     if (compoundOfEvaluable) {

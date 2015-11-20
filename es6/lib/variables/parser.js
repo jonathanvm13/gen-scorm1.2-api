@@ -81,6 +81,7 @@ var VariableParser = {
       try{
         var jCode = javascriptCode[i];
         eval(jCode);
+        variables[i].possibleValue = Variables[variables[i].name];
       } catch(exception) {
         output.errors.push(`Error en la linea ${i + 1}: ${exception.message}`);
         break;
@@ -93,7 +94,7 @@ var VariableParser = {
   },
 
   validateAll(nigmaCode) {
-    var validationOutput = this.checkCode(nigmaCode.split('\n'));
+    var validationOutput = this.checkCode(nigmaCode.split('\n').filter(variable => variable != ''));
     if(validationOutput.errors == null || validationOutput.errors.length != 0) {
       return validationOutput;
     } else {

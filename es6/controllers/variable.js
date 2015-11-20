@@ -9,11 +9,14 @@ module.exports = {
 				ok: true,
 				variables: validationOutput.variables,
 				values: validationOutput.results,
+				errors: []
 			});	
 		} else {
 			res.status(200).json({
 				ok: false,
-				errors: validationOutput.errors
+				errors: validationOutput.errors,
+				variables: null,
+				values: null,
 			});
 		}
 		

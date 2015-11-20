@@ -2,7 +2,8 @@ var Scorm = require('../controllers/scorm'),
     UserCtrl = require('../controllers/user'),
     QuestionCtrl = require('../controllers/question'),
     FolderCtrl = require('../controllers/folder'),
-    ValidationCtrl = require('../controllers/variable');
+    VariableCtrl = require('../controllers/variable'),
+    AnswerCtrl = require('../controllers/answer');
 
 var routes = [
 
@@ -33,7 +34,10 @@ var routes = [
   {path: '/users/folders',               httpMethod: 'GET',    middleware: [UserCtrl.getRootsFolders]},
 
   //Variables
-  {path: '/variables/validate',          httpMethod: 'POST', middleware: [VariableCtrl.validate]}
+  {path: '/variables/validate',          httpMethod: 'POST', middleware: [VariableCtrl.validate]},
+
+  //Answers
+  {path: '/answer/validate',          httpMethod: 'POST', middleware: [AnswerCtrl.validate]}
 
 ];
 

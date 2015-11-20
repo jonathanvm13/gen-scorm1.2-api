@@ -2,6 +2,7 @@ const CommonError = require('./common-error');
 const ExpressionEvaluator = require('../variables/expression-evaluator');
 const Variable = require('../variables/variable');
 const uniqid = require('uniqid');
+const VariableParser = require('../variables/parser');
 class Answer {
   constructor() {
     this.names = [];
@@ -60,7 +61,7 @@ class Answer {
     return output;
   }
 
-  _validateCorrectValues(variables) {
+  _validateCorrectValues(variables ) {
     var output = {error: false, messages: []};
     for(var i = 0; i < this.correctValues.length; i++){
       var correctValue = this.correctValues[i];
@@ -118,6 +119,28 @@ class Answer {
     answer.code = jsonAnswer.code;
     answer.commonErrors = jsonAnswer.commonErrors.map(commonErrorJson => CommonError.createFromResponse(commonErrorJson));
     return answer;
+  }
+
+  static validateAnswer(jsonAnswer, variableText) {
+      var answer = Answer.createFromResponse(jsonAnswer);
+      var validationOutput = VariableParser.validateAll(variableText);
+      if(validationOutput.errors.length == 0) {
+        validationOutput = answer.isValid(validationOutput.variables);
+        var ok = (validationOutput.messages.length == 0);
+        if(ok)
+          answer.generateCode();
+        return {
+          ok: validationOutput.messages.length == 0,
+          errors: validationOutput.messages,
+          answer: answer
+        };
+      } else {
+        return {
+          ok: false,
+          errors: validationOutput.errors,
+          answer: answer
+        };
+      }
   }
 }
 
