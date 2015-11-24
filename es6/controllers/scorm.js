@@ -5,14 +5,15 @@ var fs = require('fs');
 var QuestionHelper = helper.question;
 var _ = require('lodash');
 var Config = require("../config/config");
+const Answer = require('../lib/answers/answer');
 
 module.exports = {
 
   zipScorm: function (req, res) {
     var questionId = req.params.questionid;
-    var originFolderRoute = "./questions/" + questionId;
-    var copyFolderRoute = "./questions/" + questionId + "-scorm";
-    var zipRoute = "./questions/" + questionId + ".zip";
+    var originFolderRoute = "../questions/" + questionId;
+    var copyFolderRoute = "../questions/" + questionId + "-scorm";
+    var zipRoute = "../questions/" + questionId + ".zip";
     var scormQuestionDataRoute = copyFolderRoute + "/js/xml-question.js";
     var routeManifest = copyFolderRoute + "/imsmanifest.xml";
 
@@ -63,6 +64,14 @@ module.exports = {
   update: function (req, res) {
     var question = req.body.question;
     var questionId = req.params.questionid;
+    question = JSON.parse(question);
+    var answer = question.answer;
+    var variableText = question.variables.text;
+    var output = Answer.validateAnswer(answer, variableText);
+    question.answer = output.answer;
+    question.variables.text = variableText;
+    question.variables.variables = output.variables;
+    question = JSON.stringify(question);
 
     QuestionHelper.updateData(questionId, question, function (err, rows) {
       if (err) {
@@ -72,12 +81,12 @@ module.exports = {
         });
       }
 
-      var route = "./questions/" + questionId + "/js/xml-question.js";
+      var route = "../questions/" + questionId + "/js/xml-question.js";
       var data = "var question = " + JSON.stringify(question) + "; question = JSON.parse(question);window.question = window.question || question;";
-
       fs.writeFile(route, data, function (err) {
         if (err) {
-          return res.status(400).jsonp({ok: false});
+          console.log(err.stack);
+          return res.status(400).jsonp({ok: false, message: err});
         }
 
         res.status(200).jsonp({ok: true, url: Config.apiUrl + "/static/" + questionId + "/launch.html"});
