@@ -17,7 +17,6 @@ class CommonError {
   }
 
   static createFromResponse(commonErrorJson) {
-    console.log("im saving", CommonError);
     var commonError = new CommonError();
     commonError.values = commonErrorJson.values;
     commonError.message = commonErrorJson.message;

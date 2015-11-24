@@ -41,8 +41,6 @@ module.exports = {
     }
     expression = expression.toString();
     var evaluableVariables = Variable.retrieveEvaluableVariables(variables);
-    console.log(evaluableVariables);
-    console.log(">>>>>>>>>>>>>>");
     var match = expression.match(/\_[A-Za-z]/g) || [];
     var compoundOfEvaluable = match.every((varName) => evaluableVariables[varName] != null);
     if (compoundOfEvaluable) {

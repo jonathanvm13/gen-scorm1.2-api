@@ -123,8 +123,9 @@ class Answer {
 
   static validateAnswer(jsonAnswer, variableText) {
       var answer = Answer.createFromResponse(jsonAnswer);
-      var validationOutput = VariableParser.validateAll(variableText);
+      var validationOutput = VariableParser.validate(variableText);
       if(validationOutput.errors.length == 0) {
+        var variables = validationOutput.variables;
         validationOutput = answer.isValid(validationOutput.variables);
         var ok = (validationOutput.messages.length == 0);
         if(ok)
@@ -132,13 +133,15 @@ class Answer {
         return {
           ok: validationOutput.messages.length == 0,
           errors: validationOutput.messages,
-          answer: answer
+          answer: answer,
+          variables: variables
         };
       } else {
         return {
           ok: false,
           errors: validationOutput.errors,
-          answer: answer
+          answer: answer,
+          variables: null
         };
       }
   }

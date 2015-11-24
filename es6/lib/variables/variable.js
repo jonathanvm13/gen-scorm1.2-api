@@ -1,3 +1,4 @@
+
 class Variable {
   constructor(codeFragment) {
     this.codeFragment = codeFragment;

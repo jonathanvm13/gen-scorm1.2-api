@@ -7,11 +7,14 @@ var helper = require('../lib/helper.js');
 var QuestionHelper = helper.question;
 var Config = require("../config/config");
 var fs = require('fs');
+const VariableParser = require('../lib/variables/parser');
+const Answer = require('../lib/answers/answer');
+
 
 
 module.exports = {
 
-  createQuestion: function (req, res) {
+  createQuestion(req, res) {
     var user = req.user;
     var parentFolderId = req.params.folderid;
 
@@ -72,7 +75,7 @@ module.exports = {
     );
   },
 
-  updateQuestion: function (req, res) {
+  updateQuestion(req, res) {
     var question = req.body.question;
     var questionId = req.params.questionid;
 
@@ -97,7 +100,7 @@ module.exports = {
     });
   },
 
-  setData: function (req, res) {
+  setData(req, res) {
     var question = req.body.question;
     var questionId = req.params.questionid;
 
@@ -113,7 +116,7 @@ module.exports = {
     });
   },
 
-  deleteQuestion: function (req, res) {
+  deleteQuestion(req, res) {
     var questionId = req.params.questionid;
 
     Question.deleteById(questionId, function (err, rows) {
@@ -135,6 +138,43 @@ module.exports = {
         ok: true
       });
     });
+  },
+
+  validateVariables(req, res) {
+    var variableText = req.body.variables.text;
+    var questionId = req.params.questionid;
+    var question = req.body.question;
+    question.data = JSON.parse(question.data)
+    question.data.variables.text = variableText;
+    var output = VariableParser.validate(variableText);
+    question.data.variables.variables = output.variables;
+    question.data = JSON.stringify(question.data);
+    QuestionHelper.updateData(questionId, question.data, function (err, rows) {
+      if (err) {
+        console.log("An error has ocurred", err);
+      }
+    });
+    res.status(200).json(output);
+  },
+
+  validateAnswer(req, res) {
+    var answer = req.body.answer;
+    var variableText = req.body.variables.text;
+    var questionId = req.params.questionid;
+    var question = req.body.question;
+    var output = Answer.validateAnswer(answer, variableText);
+    question.data = JSON.parse(question.data);
+    question.data.answer = output.answer;
+    question.data.variables.text = variableText;
+    question.data.variables.variables = output.variables;
+    question.data = JSON.stringify(question.data);
+    QuestionHelper.updateData(questionId, question.data, function (err, rows) {
+      if (err) {
+        console.log("An error has ocurred");
+      }
+    });
+    res.status(200).json(output);
   }
+
 
 };

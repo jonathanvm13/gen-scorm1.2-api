@@ -93,13 +93,32 @@ var VariableParser = {
     return output;
   },
 
-  validateAll(nigmaCode) {
+  _validateAll(nigmaCode) {
     var validationOutput = this.checkCode(nigmaCode.split('\n').filter(variable => variable != ''));
     if(validationOutput.errors == null || validationOutput.errors.length != 0) {
       return validationOutput;
     } else {
       validationOutput = this.executeCode(validationOutput.variables);
       return validationOutput;
+    }
+  },
+
+  validate(variableText) {
+    var validationOutput = this._validateAll(variableText);
+    if(validationOutput.errors.length == 0) {
+      return {
+        ok: true,
+        variables: validationOutput.variables,
+        values: validationOutput.results,
+        errors: []
+      };  
+    } else {
+      return {
+        ok: false,
+        errors: validationOutput.errors,
+        variables: null,
+        values: null,
+      };
     }
   }
 }
