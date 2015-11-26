@@ -2,8 +2,7 @@ var Scorm = require('../controllers/scorm'),
     UserCtrl = require('../controllers/user'),
     QuestionCtrl = require('../controllers/question'),
     FolderCtrl = require('../controllers/folder'),
-    VariableCtrl = require('../controllers/variable'),
-    AnswerCtrl = require('../controllers/answer');
+    VariableCtrl = require('../controllers/variable');
 
 var routes = [
 
