@@ -100,6 +100,8 @@ module.exports = {
   setData: function (req, res) {
     var question = req.body.question;
     var questionId = req.params.questionid;
+    var folderRoute = "../../questions/" + questionId + "/images";
+
 
     QuestionHelper.updateData(questionId, question.data, function (err, rows) {
       if (err) {
@@ -109,12 +111,15 @@ module.exports = {
         });
       }
 
+      helper.deleteUselessImages(folderRoute, question.data);
+
       res.status(200).json({ok:true});
     });
   },
 
   deleteQuestion: function (req, res) {
     var questionId = req.params.questionid;
+    const folderRoute = `./questions/${questionId}`;
 
     Question.deleteById(questionId, function (err, rows) {
       if (err) {
@@ -130,6 +135,8 @@ module.exports = {
           message: "The question does not exist"
         });
       }
+
+      helper.deleteFolder(folderRoute);
 
       res.status(200).json({
         ok: true
