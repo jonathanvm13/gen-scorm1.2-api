@@ -105,6 +105,8 @@ module.exports = {
   },
 
   uploadFiles: function (req, res) {
+
+    console.log("Siiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
     var questionId = req.params.questionid;
     var imageFile;
 
@@ -118,6 +120,8 @@ module.exports = {
         message:  "File was not sent"
       });
     }
+
+    console.log("Este es el que se esta ejecutando, bueno ?");
 
     res.status(200).jsonp({url: Config.apiUrl + "/static/" + questionId + "/images/" + imageFile});
   }

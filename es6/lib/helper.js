@@ -63,6 +63,16 @@ module.exports = {
     return modifiedData;
   },
 
+  deleteUselessImages(folderRoute, questionData){
+    const images = fs.readdirSync(path.resolve(__dirname, folderRoute));
+
+    images.map(function(image){
+      if(questionData.indexOf(image) === -1){
+        fsx.removeSync(path.resolve(__dirname, `${folderRoute}/${image}`));
+      }
+    });
+  },
+
   writeManifest: function (routeManifest, metadata, next){
     fs.readFile(routeManifest, 'utf8', function (err, xmlManifest) {
       if (err) {
