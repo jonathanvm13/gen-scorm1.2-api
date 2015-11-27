@@ -58,7 +58,7 @@ module.exports = {
         helper.copyScormTemplate(question._id);
 
 
-        var route = "./questions/" + question._id + "/js/xml-question.js";
+        var route = "../questions/" + question._id + "/js/xml-question.js";
         var data = "var question = " + JSON.stringify(question) + "; question = JSON.parse(question);window.question = window.question || question;";
 
         fs.writeFile(route, data, function (err) { console.log(err)});

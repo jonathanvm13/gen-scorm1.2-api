@@ -18,8 +18,8 @@ class CommonError {
 
   static createFromResponse(commonErrorJson) {
     var commonError = new CommonError();
-    commonError.values = commonErrorJson.values;
-    commonError.message = commonErrorJson.message;
+    commonError.values = commonErrorJson.values || {};
+    commonError.message = commonErrorJson.message || "";
     return commonError;
   }
 }
