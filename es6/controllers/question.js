@@ -58,7 +58,7 @@ module.exports = {
         helper.copyScormTemplate(question._id);
 
 
-        var route = "../questions/" + question._id + "/js/xml-question.js";
+        var route = "./questions/" + question._id + "/js/xml-question.js";
         var data = "var question = " + JSON.stringify(question) + "; question = JSON.parse(question);window.question = window.question || question;";
 
         fs.writeFile(route, data, function (err) { console.log(err)});
@@ -148,14 +148,9 @@ module.exports = {
 
   validateVariables(req, res) {
     var variableText = req.body.variables.text;
-    var questionId = req.params.questionid;
-    var question = req.body.question;
-    question.data = JSON.parse(question.data)
-    question.data.variables.text = variableText;
-    var output = VariableParser.validate(variableText);
-    question.data.variables.variables = output.variables;
-    question.data = JSON.stringify(question.data);
-    QuestionHelper.updateData(questionId, question.data, function (err, rows) {
+    var data = {}
+    data["variables"] = variableText
+    QuestionHelper.updateFields(questionId, data, function (err, rows) {
       if (err) {
         console.log("An error has ocurred", err);
       }
@@ -167,16 +162,13 @@ module.exports = {
     var answer = req.body.answer;
     var variableText = req.body.variables.text;
     var questionId = req.params.questionid;
-    var question = req.body.question;
     var output = Answer.validateAnswer(answer, variableText);
-    question.data = JSON.parse(question.data);
-    question.data.answer = output.answer;
-    question.data.variables.text = variableText;
-    question.data.variables.variables = output.variables;
-    question.data = JSON.stringify(question.data);
-    QuestionHelper.updateData(questionId, question.data, function (err, rows) {
+    var data = {}
+    data["variables"] = variableText
+    data["answer"] = JSON.stringify(answer)
+    QuestionHelper.updateFields(questionId, data, function (err, rows) {
       if (err) {
-        console.log("An error has ocurred");
+        console.log("An error has ocurred", err);
       }
     });
     res.status(200).json(output);

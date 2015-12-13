@@ -53,7 +53,7 @@ var VariableParser = {
         var usedVariablesNames = variables.map(variable => variable.name);
         var validationOutput = variable.checkSyntax(usedVariablesNames);
         if (validationOutput.error) {
-          errors.push(`Error en la linea ${j + 1}: ${variableOuput.message}`);
+          errors.push(`Error en la linea ${j + 1}: ${validationOutput.message}`);
           break;
         } else {
           variables.push(variable);

@@ -5,7 +5,9 @@ var mongoose = require('mongoose'),
 
 var question = mongoose.Schema(
   {
-    data: String,
+    answer: String,
+    variables: String,
+    formulation: String,
     metadata: String,
     name: String,
     parent_folder: {type: String, required: true, ref: 'folder'},
@@ -82,13 +84,28 @@ question.statics.updateName = function (questionId, name, cb) {
 };
 
 question.statics.updateData = function (questionId, data, cb) {
+	data = JSON.parse(data)
   var conditions = {
       _id: questionId
     },
     update = {
       "$set": {
-        "data": data
+        "metadata": JSON.stringify(data.metadata)
+        "answer": JSON.stringify(data.answer)
+        "variable": JSON.stringify(data.variable)
+        "formulation": JSON.stringify(data.formulation)
       }
+    };
+
+  this.update(conditions, update, cb);
+};
+
+question.statics.updateFields = function (questionId, data, cb) {
+  var conditions = {
+      _id: questionId
+    },
+    update = {
+      "$set": data
     };
 
   this.update(conditions, update, cb);
