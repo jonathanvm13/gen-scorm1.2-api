@@ -90,10 +90,10 @@ question.statics.updateData = function (questionId, data, cb) {
     },
     update = {
       "$set": {
-        "metadata": JSON.stringify(data.metadata)
-        "answer": JSON.stringify(data.answer)
-        "variable": JSON.stringify(data.variable)
-        "formulation": JSON.stringify(data.formulation)
+        "metadata": JSON.stringify(data.metadata),
+        "answer": JSON.stringify(data.answer),
+        "variable": data.variables,
+        "formulation": JSON.stringify(data.formulation),
       }
     };
 

@@ -148,6 +148,7 @@ module.exports = {
 
   validateVariables(req, res) {
     var variableText = req.body.variables.text;
+    var questionId = req.params.questionid;
     var data = {}
     data["variables"] = variableText
     QuestionHelper.updateFields(questionId, data, function (err, rows) {

@@ -123,6 +123,24 @@ module.exports = {
       });
     },
 
+    updateFields: function (questionId, data, cb) {
+      var conditions = {
+          _id: questionId
+        }
+       var update = {
+          "$set": data
+        };
+
+      Question.update(conditions, update, function (err, rows) {
+        if (err) {
+          cb(err);
+          return;
+        }
+
+        cb(null);
+      });
+    },
+
     addImage: function (questionId, imageName, cb) {
 
       var conditions = {
