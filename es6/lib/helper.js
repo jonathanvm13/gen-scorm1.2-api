@@ -104,6 +104,7 @@ module.exports = {
   question: {
 
     updateData: function (questionId, data, cb) {
+    	console.log("Updating....", questionId, data);
       var conditions = {
           _id: questionId
         },
@@ -124,17 +125,21 @@ module.exports = {
     },
 
     updateFields: function (questionId, data, cb) {
+    	console.log("Updating....", questionId, data);
       var conditions = {
           _id: questionId
-        }
-       var update = {
-          "$set": data
         };
+     var update = {
+        "$set": data
+      };
 
       Question.update(conditions, update, function (err, rows) {
         if (err) {
+        	console.log(err);
           cb(err);
           return;
+        } else {
+        	console.log("Saved!");
         }
 
         cb(null);

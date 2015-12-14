@@ -151,6 +151,7 @@ module.exports = {
     var questionId = req.params.questionid;
     var data = {}
     data["variables"] = variableText
+    var output = VariableParser.validate(variableText);
     QuestionHelper.updateFields(questionId, data, function (err, rows) {
       if (err) {
         console.log("An error has ocurred", err);

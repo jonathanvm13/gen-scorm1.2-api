@@ -107,7 +107,7 @@ question.statics.updateFields = function (questionId, data, cb) {
     update = {
       "$set": data
     };
-
+   console.log("Called???");
   this.update(conditions, update, cb);
 };
 
