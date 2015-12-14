@@ -99,7 +99,7 @@ module.exports = {
       user.pass = undefined;
       user.folders = undefined;
 
-      token = jwt.sign(user, "zVTcnZgLTWoNxAidDbOwQQuWfKRwVC");
+      var token = jwt.sign(user, "zVTcnZgLTWoNxAidDbOwQQuWfKRwVC");
 
       res.status(200).json({
         ok: true,
@@ -224,6 +224,7 @@ module.exports = {
           });
         }
 
+        console.log(rootFolder.questions);
         res.status(200).json({
           ok: true,
           root_folder: rootFolder,
