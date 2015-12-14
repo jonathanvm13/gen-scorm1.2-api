@@ -61,18 +61,9 @@ module.exports = {
     })
   },
 
-  update: function (req, res) {
+  preview: function (req, res) {
     var question = req.body.question;
     var questionId = req.params.questionid;
-    question = JSON.parse(question);
-    var answer = question.answer;
-    var variableText = question.variables.text;
-    var output = Answer.validateAnswer(answer, variableText);
-    question.answer = output.answer;
-    question.variables.text = variableText;
-    question.variables.variables = output.variables;
-    question = JSON.stringify(question);
-
     QuestionHelper.updateData(questionId, question, function (err, rows) {
       if (err) {
         return res.status(400).json({
@@ -80,17 +71,32 @@ module.exports = {
           message: err.message
         });
       }
+      var answer = question.answer;
+      var variableText = question.variables;
+      var output = Answer.validateAnswer(answer, variableText);
+      question.answer = output.answer;
+      question.variables = {
+      	text:  variableText,
+      	variables: output.variables
+      }
+      if(output.ok) {
+      	var route = "../../questions/" + questionId + "/js/xml-question.js";
+      	var data = "var question = " + JSON.stringify(question) + "; question = JSON.parse(question);window.question = window.question || question;";
+      	fs.writeFile(path.join(__dirname, route), data, function (err) {
+      	  if (err) {
+      	    console.log(err.stack);
+      	    return res.status(400).jsonp({ok: false, message: err});
+      	  }
 
-      var route = "./questions/" + questionId + "/js/xml-question.js";
-      var data = "var question = " + JSON.stringify(question) + "; question = JSON.parse(question);window.question = window.question || question;";
-      fs.writeFile(route, data, function (err) {
-        if (err) {
-          console.log(err.stack);
-          return res.status(400).jsonp({ok: false, message: err});
-        }
+      	  res.status(200).jsonp({ok: true, url: Config.apiUrl + "/static/" + questionId + "/launch.html"});
+      	});
+      } else {
+      	res.status(400).json({
+      		ok: false
+      	})
+      }
 
-        res.status(200).jsonp({ok: true, url: Config.apiUrl + "/static/" + questionId + "/launch.html"});
-      });
+
     });
   },
 

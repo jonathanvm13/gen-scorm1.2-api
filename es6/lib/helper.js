@@ -64,13 +64,18 @@ module.exports = {
   },
 
   deleteUselessImages(folderRoute, questionData){
-    const images = fs.readdirSync(path.resolve(__dirname, folderRoute));
+    var images = [];
 
-    images.map(function(image){
-      if(questionData.indexOf(image) === -1){
-        fsx.removeSync(path.resolve(__dirname, `${folderRoute}/${image}`));
-      }
-    });
+  	try{
+  		images = fs.readdirSync(path.resolve(__dirname, folderRoute));
+  	} catch (e) {
+	    images.map(function(image){
+	      if(questionData.indexOf(image) === -1){
+	        	fsx.removeSync(path.join(__dirname, `${folderRoute}/${image}`));
+	      }
+	    });
+	  }
+
   },
 
   writeManifest: function (routeManifest, metadata, next){
@@ -104,13 +109,15 @@ module.exports = {
   question: {
 
     updateData: function (questionId, data, cb) {
-    	console.log("Updating....", questionId, data);
       var conditions = {
           _id: questionId
         },
         update = {
           "$set": {
-            "data": data
+            "formulation": data.formulation,
+            "variables": data.variables,
+            "answer": data.answer,
+            "metadata": data.metadata
           }
         };
 

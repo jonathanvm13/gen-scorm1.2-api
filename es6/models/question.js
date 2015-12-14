@@ -5,10 +5,10 @@ var mongoose = require('mongoose'),
 
 var question = mongoose.Schema(
   {
-    answer: String,
+    answer: Schema.Types.Mixed,
     variables: String,
     formulation: String,
-    metadata: String,
+    metadata: Schema.Types.Mixed,
     name: String,
     parent_folder: {type: String, required: true, ref: 'folder'},
     owner: {type: String, required: true, ref: 'user'},
