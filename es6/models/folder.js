@@ -3,6 +3,10 @@ var mongoose = require('mongoose'),
   Schema = mongoose.Schema,
   _ = require("lodash");
 
+var Question = require('./question');
+
+mongoose.Promise = global.Promise;
+
 var folder = Schema(
   {
     name: String,
@@ -14,6 +18,17 @@ var folder = Schema(
     delete: Boolean
   }
 );
+
+var autoPopulateData = function(next) {
+    this.populate('questions folders');
+    next();
+};
+
+
+folder.pre('find', autoPopulateData)
+  .pre('findOne', autoPopulateData)
+  .pre('findById', autoPopulateData);
+
 
 folder.set('toJSON', {
   transform: function (doc, ret, options) {
@@ -52,117 +67,11 @@ folder.statics.hasUser = function (folderId, userId){
    })
 };
 
-folder.statics.getAllData = function (folderId, cb) {
-  var self = this;
-
-  async.waterfall(
-    [
-      function (next) {
-        self.findById(folderId)
-          .populate('questions folders', 'name questions folders variables metadata answer formulation owner parent_folder users', {
-            $or: [
-              {delete: false},
-              {delete: {$exists: false}}
-            ]
-          }).exec(next);
-      },
-      function (rootFolder, next) {
-
-        var foldersIds = [];
-        var questionsIds = [];
-
-        _.forEach(rootFolder.folders, function (folder) {
-
-          _.forEach(folder.folders, function (folder) {
-            foldersIds.push(folder);
-          });
-
-          _.forEach(folder.questions, function (question) {
-            questionsIds.push(question);
-          });
-
-        });
-
-        self.getByIds(foldersIds, function (err, subFolders) {
-
-          var data = {
-            rootFolder:rootFolder,
-            subFolders:subFolders,
-            questionsIds:questionsIds
-          };
-
-          next(err, data);
-        });
-      },
-      function (data, next) {
-        var Question = require('./question');
-
-        Question.getByIds(data.questionsIds, function (err, subQuestions) {
-          data.subQuestions = subQuestions;
-
-          next(err, data);
-        });
-      },
-      function (data, next) {
-        let rootFolder = data.rootFolder.toJSON();
-
-        rootFolder.folders = _.map(rootFolder.folders, function (folder) {
-          var folders = folder.folders;
-          var questions = folder.questions;
-
-          folder.folders = [];
-          folder.questions = [];
-
-          _.forEach(data.subFolders, function (subFolder) {
-
-            _.forEach(folders, function (folderFromArray) {
-
-              if(folderFromArray == subFolder._id.toString()){
-                folder.folders.push(subFolder);
-              }
-            });
-
-          });
-
-          _.forEach(data.subQuestions, function (subQuestion) {
-
-            _.forEach(questions, function (question) {
-
-              if(question == subQuestion._id.toString()){
-                folder.questions.push(subQuestion);
-              }
-            });
-
-          });
-
-          return folder;
-        });
-
-
-        next(null, rootFolder);
-      }
-    ],
-    cb
-  )
-};
-
-folder.statics.getByIds = function (foldersIds, cb) {
-  this.find({
-    _id: {
-      $in: foldersIds
-    }
-  }).populate('questions folders', {
-    $or: [
-      {delete: false},
-      {delete: {$exists: false}}
-    ]
-  }).exec(cb);
-};
-
 
 folder.statics.getById = function (folderId, cb) {
-  this.findById(folderId, cb);
+  return this.findById(folderId).exec();
 };
+
 
 folder.statics.getFolderWithQuestions = function (folderId, cb) {
   this.findById(folderId).populate('questions', "name", {

@@ -199,39 +199,24 @@ module.exports = {
 
   getRootsFolders: function (req, res) {
     var userId = req.user._id;
-
-    async.waterfall(
-      [
-        function (next) {
-          User.getById(userId, 'root_folder root_shared_folder', next);
-        },
-        function (user, next) {
-          Folder.getAllData(user.root_folder, function (err, rootFolder) {
-            next(err, rootFolder, user);
-          });
-        },
-        function (rootFolder, user, next) {
-          Folder.getAllData(user.root_shared_folder, function (err, sharedFolder) {
-            next(err, rootFolder, sharedFolder);
-          });
-        }
-      ],
-      function (err, rootFolder, sharedFolder) {
-        if (err) {
-          return res.status(400).json({
-            ok: false,
-            message: err.message
-          });
-        }
-
-        console.log(rootFolder.questions);
-        res.status(200).json({
-          ok: true,
-          root_folder: rootFolder,
-          root_shared_folders: sharedFolder
+    User.getById(userId, 'root_folder root_shared_folder')
+      .then(function(user) {
+        var promises = [Folder.getById(user.root_folder), Folder.getById(user.root_shared_folder)]
+        Promise.all(promises).then(function(folders) {
+          res.status(200).json({
+             ok: true,
+             root_folder: folders[0],
+             root_shared_folders: folders[1]
+          });  
         });
-      }
-    );
+      })
+      .catch(function(error) {
+        console.error(error);
+        res.status(400).json({
+          ok: false,
+          message: err.message
+        });
+      })
   }
 
 };
