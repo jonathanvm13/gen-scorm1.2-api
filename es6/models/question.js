@@ -134,28 +134,23 @@ Question.statics.updateData = function (questionId, data, cb) {
 	this.update(conditions, update, cb);
 };
 
-Question.statics.updateFields = function (questionId, data, cb) {
-	var conditions = {
-			_id: questionId
-		},
-		update = {
-			"$set": data
-		};
-	 console.log("Called???");
-	this.update(conditions, update, cb);
+Question.statics.updateFields = function (questionId, data) {
+	return this.findOneAndUpdate({_id: questionId}, data);
 };
 
-Question.statics.deleteById = function (questionId, cb) {
-	var conditions = {
-			_id: questionId
-		},
-		update = {
-			"$set": {
-				"deleted": true
-			}
-		};
-
-	this.update(conditions, update, cb);
+Question.statics.deleteById = function (questionId, helper) {
+	const folderRoute = `./questions/${questionId}`;
+	return new Promise(function(resolve, reject) {
+		Question.updateFields(questionId, {deleted: true})
+			.then(function(question) {
+				try {
+					helper.deleteFolder(folderRoute);
+					resolve(question);
+				} catch (error) {
+					reject(error);
+				}
+			})
+	});
 };
 Question = mongoose.model('question', Question);
 module.exports = Question;

@@ -207,7 +207,7 @@ module.exports = {
              ok: true,
              root_folder: folders[0],
              root_shared_folders: folders[1]
-          });  
+          });
         });
       })
       .catch(function(error) {

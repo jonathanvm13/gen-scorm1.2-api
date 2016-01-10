@@ -83,29 +83,20 @@ setData(req, res) {
 
 deleteQuestion(req, res) {
 	var questionId = req.params.questionid;
-	const folderRoute = `./questions/${questionId}`;
 
-	Question.deleteById(questionId, function (err, rows) {
-		if (err) {
-			return res.status(400).json({
-				ok: false,
-				message: err.message
+	Question.deleteById(questionId, helper)
+		.then(function(question) {
+			res.status(200).json({
+				ok: true
 			});
-		}
-
-		if (rows.n == 0) {
-			return res.status(400).json({
+		})
+		.catch(function(error) {
+			console.error(error);
+			res.status(400).json({
 				ok: false,
-				message: "The question does not exist"
+				message: error.message
 			});
-		}
-
-		helper.deleteFolder(folderRoute);
-
-		res.status(200).json({
-			ok: true
 		});
-	});
 },
 
 validateVariables(req, res) {
