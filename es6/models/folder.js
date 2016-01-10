@@ -15,7 +15,9 @@ var folder = Schema(
     folders: [{type: Schema.Types.ObjectId, ref: 'folder'}],
     owner: {type: String, required: true, ref: 'user'},
     users: [{type: String, ref: 'user'}],
-    delete: Boolean
+    deleted: {type: Boolean, required: true, default: false},
+    update_at: Date,
+    created_at: Date
   }
 );
 
@@ -24,10 +26,19 @@ var autoPopulateData = function(next) {
     next();
 };
 
-
+var beforeSave = function(next) {
+  this.update_at = new Date();
+  if(this.isNew) {
+    this.created_at = new Date();
+  }
+  next();
+};
+//Callbacks
 folder.pre('find', autoPopulateData)
   .pre('findOne', autoPopulateData)
-  .pre('findById', autoPopulateData);
+  .pre('findById', autoPopulateData)
+  .pre('save', beforeSave)
+  .pre('update', beforeSave);
 
 
 folder.set('toJSON', {
@@ -44,14 +55,14 @@ folder.statics.getFoldersWithQuestions = function (userId, cb) {
   this.find({
     user: userId,
     $or: [
-      {delete: false},
-      {delete: {$exists: false}}
+      {deleted: false},
+      {deleted: {$exists: false}}
     ]
   })
     .populate('questions', "name", {
       $or: [
-        {delete: false},
-        {delete: {$exists: false}}
+        {deleted: false},
+        {deleted: {$exists: false}}
       ]
     })
     .exec(cb);
@@ -69,15 +80,15 @@ folder.statics.hasUser = function (folderId, userId){
 
 
 folder.statics.getById = function (folderId, cb) {
-  return this.findById(folderId).exec();
+  return this.findOne({_id: folderId, deleted: false}).exec();
 };
 
 
 folder.statics.getFolderWithQuestions = function (folderId, cb) {
   this.findById(folderId).populate('questions', "name", {
     $or: [
-      {delete: false},
-      {delete: {$exists: false}}
+      {deleted: false},
+      {deleted: {$exists: false}}
     ]
   })
     .exec(cb);
@@ -94,8 +105,8 @@ folder.statics.getQuestionsFromFolders = function (foldersIds, userId, cb) {
   })
     .populate('questions', "name", {
       $or: [
-        {delete: false},
-        {delete: {$exists: false}}
+        {deleted: false},
+        {deleted: {$exists: false}}
       ]
     })
     .exec(cb);
@@ -146,7 +157,7 @@ folder.statics.deleteById = function (folderId, cb) {
     },
     update = {
       "$set": {
-        "delete": true
+        "deleted": true
       }
     };
 

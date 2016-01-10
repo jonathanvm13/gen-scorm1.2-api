@@ -14,9 +14,19 @@ var question = mongoose.Schema(
     owner: {type: String, required: true, ref: 'user'},
     users: [{type: String, required: true, ref: 'user'}],
     images: [{type: String}],
-    delete: Boolean
+    deleted: {type: Boolean, required: true, default: false},
+    update_at: Date,
+    created_at: Date
   }
 );
+
+question.pre('save', function(next) {
+  this.update_at = new Date();
+  if(!this.isNew) {
+    this.created_at = new Date();
+  }
+  next();
+});
 
 question.set('toJSON', {
   transform: function (doc, ret, options) {
@@ -54,8 +64,8 @@ question.statics.getByIds = function(questionsIds, cb){
       $in: questionsIds
     },
     $or: [
-      {delete: false},
-      {delete: {$exists: false}}
+      {deleted: false},
+      {deleted: {$exists: false}}
     ]
   }, cb);
 };
@@ -117,7 +127,7 @@ question.statics.deleteById = function (questionId, cb) {
     },
     update = {
       "$set": {
-        "delete": true
+        "deleted": true
       }
     };
 
