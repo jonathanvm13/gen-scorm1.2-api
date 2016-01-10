@@ -33,6 +33,7 @@ var beforeSave = function(next) {
   }
   next();
 };
+
 //Callbacks
 folder.pre('find', autoPopulateData)
   .pre('findOne', autoPopulateData)
@@ -40,7 +41,13 @@ folder.pre('find', autoPopulateData)
   .pre('save', beforeSave)
   .pre('update', beforeSave);
 
-
+folder.pre('save', function(next) {
+  this.update_at = new Date();
+  if(!this.isNew) {
+    this.created_at = new Date();
+  }
+  next();
+});
 folder.set('toJSON', {
   transform: function (doc, ret, options) {
     delete ret.__v;
