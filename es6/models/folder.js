@@ -22,7 +22,15 @@ var folder = Schema(
 );
 
 var autoPopulateData = function(next) {
-    this.populate('questions folders');
+    this.populate({
+    	path: 'questions',
+    	match: {deleted: false}
+    });
+    this.populate({
+    	path: 'folders',
+    	match: {deleted: false}
+    });
+
     next();
 };
 
