@@ -1,137 +1,161 @@
 
 var mongoose = require('mongoose'),
-  async = require('async'),
-  Schema = mongoose.Schema;
+	async = require('async'),
+	Schema = mongoose.Schema,
+	Folder = require('./folder');
 
-var question = mongoose.Schema(
-  {
-    answer: Schema.Types.Mixed,
-    variables: String,
-    formulation: String,
-    metadata: Schema.Types.Mixed,
-    name: String,
-    parent_folder: {type: String, required: true, ref: 'folder'},
-    owner: {type: String, required: true, ref: 'user'},
-    users: [{type: String, required: true, ref: 'user'}],
-    images: [{type: String}],
-    deleted: {type: Boolean, required: true, default: false},
-    update_at: Date,
-    created_at: Date
-  }
+var Question = mongoose.Schema(
+	{
+		answer: Schema.Types.Mixed,
+		variables: String,
+		formulation: String,
+		metadata: Schema.Types.Mixed,
+		name: String,
+		parent_folder: {type: String, required: true, ref: 'folder'},
+		owner: {type: String, required: true, ref: 'user'},
+		users: [{type: String, required: true, ref: 'user'}],
+		images: [{type: String}],
+		deleted: {type: Boolean, required: true, default: false},
+		update_at: Date,
+		created_at: Date
+	}
 );
 
-question.pre('save', function(next) {
-  this.update_at = new Date();
-  if(!this.isNew) {
-    this.created_at = new Date();
-  }
-  next();
+Question.pre('save', function(next) {
+	this.update_at = new Date();
+	if(this.isNew) {
+		this.created_at = new Date();
+	}
+	next();
 });
 
-question.set('toJSON', {
-  transform: function (doc, ret, options) {
-    delete ret.__v;
-    delete ret.folder;
-  }
+Question.set('toJSON', {
+	transform: function (doc, ret, options) {
+		delete ret.__v;
+		delete ret.folder;
+	}
 });
 
-question.methods.create = function (cb) {
-  var Folder = require('./folder'),
-    self = this;
-
-  async.waterfall(
-    [
-      function (next) {
-
-        self.save(function (err, question) {
-          next(err, question);
-        });
-      },
-      function (question, next) {
-
-        Folder.addQuestion(question.folder, question._id, function (err, rows) {
-          next(err, question);
-        });
-      }
-    ],
-    cb
-  )
+Question.statics.createQuestion = function (questionName, user, parentFolderId, helper) {
+	return new Promise(function(resolve, reject) {
+		var parentFolderInstance = null;
+		var newQuestionInstance = null;
+		Folder.getById(parentFolderId)
+			.then(function(parentFolder) {
+				parentFolderInstance = parentFolder;
+				newQuestionInstance = new Question({
+					name: questionName,
+					owner: user._id,
+					parent_folder: parentFolder._id,
+					users: parentFolder.users,
+					variables: "",
+					answer: {},
+					formulation: "",
+					metadata: {}
+				})
+				return newQuestionInstance.save();
+			})
+			.then(function(question) {
+				parentFolderInstance.questions.addToSet(question._id)
+				return parentFolderInstance.save();
+			})
+			.then(function(parentFolder) {
+				return new Promise(function(resolve, reject) {
+					//Create or update question folder with scorm template
+					try {
+						helper.copyScormTemplate(newQuestionInstance._id);
+						helper.question.writeQuestionFile(newQuestionInstance)
+							.then(function(question) {
+								resolve(question)
+							})
+							.catch(function(error) {reject(error)})
+					} catch(error) {
+						reject(error);
+					}
+				})
+			})
+			.then(function(newQuestion) {
+				resolve(newQuestion);
+			})
+			.catch(function(error) {
+				reject(error);
+			})
+	})
 };
 
-question.statics.getByIds = function(questionsIds, cb){
-  this.find({
-    _id: {
-      $in: questionsIds
-    },
-    $or: [
-      {deleted: false},
-      {deleted: {$exists: false}}
-    ]
-  }, cb);
+Question.statics.getByIds = function(questionsIds, cb){
+	this.find({
+		_id: {
+			$in: questionsIds
+		},
+		$or: [
+			{deleted: false},
+			{deleted: {$exists: false}}
+		]
+	}, cb);
 };
 
-question.statics.hasUser = function (questionId, userId){
-  this.find({_id: questionId, users: userId}, function(err, question){
-    if(question){
-      return true;
-    }
-
-    return false;
-  })
+Question.statics.hasUser = function (questionId, userId){
+	this.find({_id: questionId, users: userId}, function(err, question){
+		if(question){
+			return true;
+		}
+		return false;
+	})
 };
 
-question.statics.updateName = function (questionId, name, cb) {
-  var conditions = {
-      _id: questionId
-    },
-    update = {
-      "$set": {
-        "name": name
-      }
-    };
+Question.statics.updateName = function (questionId, name, cb) {
+	var conditions = {
+			_id: questionId
+		},
+		update = {
+			"$set": {
+				"name": name
+			}
+		};
 
-  this.update(conditions, update, cb);
+	this.update(conditions, update, cb);
 };
 
-question.statics.updateData = function (questionId, data, cb) {
+Question.statics.updateData = function (questionId, data, cb) {
 	data = JSON.parse(data)
-  var conditions = {
-      _id: questionId
-    },
-    update = {
-      "$set": {
-        "metadata": JSON.stringify(data.metadata),
-        "answer": JSON.stringify(data.answer),
-        "variable": data.variables,
-        "formulation": JSON.stringify(data.formulation),
-      }
-    };
+	var conditions = {
+			_id: questionId
+		},
+		update = {
+			"$set": {
+				"metadata": JSON.stringify(data.metadata),
+				"answer": JSON.stringify(data.answer),
+				"variable": data.variables,
+				"formulation": JSON.stringify(data.formulation),
+			}
+		};
 
-  this.update(conditions, update, cb);
+	this.update(conditions, update, cb);
 };
 
-question.statics.updateFields = function (questionId, data, cb) {
-  var conditions = {
-      _id: questionId
-    },
-    update = {
-      "$set": data
-    };
-   console.log("Called???");
-  this.update(conditions, update, cb);
+Question.statics.updateFields = function (questionId, data, cb) {
+	var conditions = {
+			_id: questionId
+		},
+		update = {
+			"$set": data
+		};
+	 console.log("Called???");
+	this.update(conditions, update, cb);
 };
 
-question.statics.deleteById = function (questionId, cb) {
-  var conditions = {
-      _id: questionId
-    },
-    update = {
-      "$set": {
-        "deleted": true
-      }
-    };
+Question.statics.deleteById = function (questionId, cb) {
+	var conditions = {
+			_id: questionId
+		},
+		update = {
+			"$set": {
+				"deleted": true
+			}
+		};
 
-  this.update(conditions, update, cb);
+	this.update(conditions, update, cb);
 };
-
-module.exports = mongoose.model('question', question);
+Question = mongoose.model('question', Question);
+module.exports = Question;

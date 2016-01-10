@@ -19,55 +19,8 @@ module.exports = {
 		var user = req.user;
 		var parentFolderId = req.params.folderid;
 
-		async.waterfall(
-			[
-			function getDataParentFolder(next) {
-				Folder.getById(parentFolderId, next);
-			},
-			function (parentFolder, next) {
-				var question = new Question({
-					name: req.body.question.name,
-					owner: user._id,
-					parent_folder: parentFolder._id,
-					users: parentFolder.users,
-					variables: "",
-					answer: {},
-					formulation: "",
-							metadata: {} //The new question have the same users  acces from her parent
-				});
-
-				question.create(function (err, question) {
-					next(err, question);
-				});
-			},
-			function (question, next) {
-				Folder.addQuestion(parentFolderId, question._id, function (err, rows) {
-					if (!err && rows.n == 0) {
-						return next(new Error("Parent folder was not update"));
-					}
-					next(err, question);
-				});
-			}
-			],
-			function (err, question) {
-				if (err) {
-					return res.status(400).json({
-						ok: false,
-						message: err.message
-					});
-				}
-
-				//Create or update question folder with scorm template
-				helper.copyScormTemplate(question._id);
-
-				var route = "../../questions/" + question._id + "/js/xml-question.js";
-				var data = "var question = " + JSON.stringify(question) + "; question = JSON.parse(question);window.question = window.question || question;";
-
-				fs.writeFile(path.join(__dirname, route), data, function (err) {
-					if(err)
-						console.log(err)
-				});
-
+		Question.createQuestion(req.body.question.name, user, parentFolderId, helper)
+			.then(function(question) {
 				res.status(200).json({
 					ok: true,
 					question: {
@@ -75,11 +28,13 @@ module.exports = {
 						name: question.name
 					}
 				});
-
-
-
-			}
-			);
+			})
+			.catch(function(error) {
+				res.status(400).json({
+					ok: false,
+					message: error.message
+				});
+			})
 },
 
 updateQuestion(req, res) {
