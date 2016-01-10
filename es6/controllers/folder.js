@@ -13,43 +13,30 @@ module.exports = {
     var folderName = req.body.folder.name;
     var parentFolderId = req.params.folderid;
     var user = req.user;
-
-    async.waterfall(
-      [
-        function getDataParentFolder(next) {
-          Folder.getById(parentFolderId, next);
-        },
-        function (parentFolder, next) {
-          var folder = new Folder(
-            {
-              name: folderName,
-              owner: user._id,
-              parent_folder: parentFolder._id,
-              users: parentFolder.users //The new folder have the same users  acces from her parent
-            }
-          );
-
-          folder.create(function (err, folder) {
-            next(err, folder);
-          });
-        },
-        function (folder, next) {
+    Folder.getById(parentFolderId)
+      .then(function(parentFolder) {
+        var newFolder = new Folder({
+          name: folderName,
+          owner: user._id,
+          parent_folder: parentFolder._id,
+          users: parentFolder.users //The new folder have the same users  acces from her parent
+        });
+        return newFolder.save();
+      })
+      .then(function(folder) {
+        return new Promise(function(resolve, reject) {
           Folder.addFolder(parentFolderId, folder._id, function (err, rows) {
-            if (!err && rows.n == 0) {
-              return next(new Error("Parent folder was not update"));
+            if(err){
+              reject(err);
+            } else if (rows.n == 0) {
+              reject(new Error("Parent folder was not update"));
+            } else {
+              resolve(folder)
             }
-            next(err, folder);
           });
-        }
-      ],
-      function (err, folder) {
-        if (err) {
-          return res.status(400).json({
-            ok: false,
-            message: err.message
-          });
-        }
-
+        })
+      })
+      .then(function(folder) {
         res.status(200).json({
           ok: true,
           folder: {
@@ -57,8 +44,51 @@ module.exports = {
             name: folder.name
           }
         });
-      }
-    );
+      })
+      .catch(function(error) {
+        res.status(400).json({
+            ok: false,
+            message: error.message
+          });
+      })
+
+    // async.waterfall(
+    //   [
+    //     function getDataParentFolder(next) {
+    //       Folder.getById(parentFolderId, next);
+    //     },
+    
+
+    //       folder.create(function (err, folder) {
+    //         next(err, folder);
+    //       });
+    //     },
+    //     function (folder, next) {
+    //       Folder.addFolder(parentFolderId, folder._id, function (err, rows) {
+    //         if (!err && rows.n == 0) {
+    //           return next(new Error("Parent folder was not update"));
+    //         }
+    //         next(err, folder);
+    //       });
+    //     }
+    //   ],
+    //   function (err, folder) {
+    //     if (err) {
+    //       return res.status(400).json({
+    //         ok: false,
+    //         message: err.message
+    //       });
+    //     }
+
+    //     res.status(200).json({
+    //       ok: true,
+    //       folder: {
+    //         _id: folder._id,
+    //         name: folder.name
+    //       }
+    //     });
+    //   }
+    // );
   },
 
   update: function (req, res) {

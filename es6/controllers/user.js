@@ -111,19 +111,19 @@ module.exports = {
   getInfo: function (req, res) {
     var user = req.user;
 
-    User.getById(user._id, 'name email photo', function (err, user) {
-      if (err) {
-        return res.status(400).json({
-          ok: false,
-          message: err.message
+    User.getById(user._id, 'name email photo')
+      .then(function(user){
+        res.status(200).json({
+          ok: true,
+          user: user
         });
-      }
-
-      res.status(200).json({
-        ok: true,
-        user: user
+      })
+      .catch(function(error) {
+        res.status(400).json({
+          ok: false,
+          message: error.message
+        });
       });
-    });
   },
 
   sharedFolder: function (req, res) {
